@@ -4,27 +4,27 @@ import {
   Keyboard,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Header } from '../components/Header';
-import { useAppStore } from '../store/useAppStore';
-import { useNavigation } from 'expo-router';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Header } from '@/components/Header';
+import { useAppStore, AppState } from '@/store/useAppStore';
+import { useRouter } from 'expo-router';
+import { styles } from '@/screens/RegisterScreen/RegisterScreen.style';
 
-export function RegisterScreen() {
+export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const register = useAppStore((state) => state.register);
-  const navigation = useNavigation();
+  const register = useAppStore((status: AppState) => status.register);
+  const router = useRouter();
 
   const errorMessage = useMemo(() => {
     if (!password || !confirmPassword) {
@@ -44,17 +44,17 @@ export function RegisterScreen() {
     setLoading(true);
     try {
       await register(email.trim(), password, name.trim());
-      navigation.navigate('JoinOrCreate');
+      router.replace('/join-or-create');
     } catch (error) {
       console.error('Registration failed:', error);
     } finally {
       setLoading(false);
     }
-  }, [email, errorMessage, name, navigation, password, register]);
+  }, [email, errorMessage, name, router, password, register]);
 
   return (
     <View style={styles.root}>
-      <Header title="Rejestracja" showBack onBack={() => navigation.goBack()} />
+      <Header title="Rejestracja" showBack onBack={() => router.back()} />
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -116,7 +116,7 @@ export function RegisterScreen() {
 
             <Text style={styles.loginText}>
               Masz już konto?{' '}
-              <Text style={styles.loginLink} onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.loginLink} onPress={() => router.replace('/(auth)')}>
                 Zaloguj się
               </Text>
             </Text>
@@ -126,49 +126,3 @@ export function RegisterScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 32,
-    paddingTop: 16,
-    gap: 32,
-    justifyContent: 'space-between',
-  },
-  form: {
-    backgroundColor: '#f9fafb',
-    borderRadius: 24,
-    padding: 24,
-    gap: 18,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  field: {
-    gap: 8,
-  },
-  error: {
-    color: '#b91c1c',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  loginText: {
-    textAlign: 'center',
-    color: '#4b5563',
-    fontSize: 15,
-  },
-  loginLink: {
-    color: '#2563eb',
-    fontWeight: '700',
-  },
-});
