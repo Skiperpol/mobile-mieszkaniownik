@@ -1,15 +1,11 @@
-import { useAppStore } from '../store/useAppStore';
-import { Header } from '../components/Header';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
+import { useAppStore } from '@/store/useAppStore';
+import { Header } from '@/components/Header';
+import { Button } from '@/components/ui2/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { User, Mail, Users, LogOut, Home } from 'lucide-react';
+import { router } from 'expo-router';
 
-interface UserProfileScreenProps {
-  onNavigate: (screen: string) => void;
-  onBack?: () => void;
-}
-
-export function UserProfileScreen({ onNavigate, onBack }: UserProfileScreenProps) {
+export default function UserProfileScreen() {
   const user = useAppStore((state) => state.user);
   const currentGroup = useAppStore((state) => state.currentGroup);
   const logout = useAppStore((state) => state.logout);
@@ -17,12 +13,12 @@ export function UserProfileScreen({ onNavigate, onBack }: UserProfileScreenProps
 
   const handleLogout = () => {
     logout();
-    onNavigate('login');
+    router.push('/(auth)/login');
   };
 
   const handleLeaveGroup = () => {
     leaveGroup();
-    onNavigate('join-create');
+    router.push('/join-or-create');
   };
 
   return (
@@ -30,7 +26,7 @@ export function UserProfileScreen({ onNavigate, onBack }: UserProfileScreenProps
       <Header
         title="Profil"
         showBack
-        onBack={onBack || (() => onNavigate('dashboard'))}
+        onBack={() => router.back()}
       />
 
       <div className="pt-14 px-4 py-6">
@@ -63,7 +59,7 @@ export function UserProfileScreen({ onNavigate, onBack }: UserProfileScreenProps
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => onNavigate('members')}
+                  onClick={() => router.push('/group/members')}
                 >
                   <Users className="w-4 h-4 mr-2" />
                   Zobacz członków

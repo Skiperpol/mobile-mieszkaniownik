@@ -11,28 +11,29 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { Button } from '../components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { useAppStore } from '../store/useAppStore';
-import { useNavigation } from 'expo-router';
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAppStore } from '@/store/useAppStore';
+import { useRouter } from 'expo-router';
+import { styles } from './JoinOrCreateGroupScreen.style';
 
 type Mode = 'select' | 'create' | 'join';
 
-export function JoinOrCreateGroupScreen() {
+export default function JoinOrCreateGroupScreen() {
   const [mode, setMode] = useState<Mode>('select');
   const [groupName, setGroupName] = useState('');
   const [groupCode, setGroupCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
-  const navigation = useNavigation();
+  const router = useRouter();
   
   const createGroup = useAppStore((s) => s.createGroup);
   const joinGroup = useAppStore((state) => state.joinGroup);
@@ -58,17 +59,17 @@ export function JoinOrCreateGroupScreen() {
     setLoading(true);
     try {
       await joinGroup(groupCode.trim().toUpperCase());
-      navigation.navigate('Dashboard');
+      router.push('/(group)');
     } catch (error) {
       console.error('Failed to join group:', error);
     } finally {
       setLoading(false);
     }
-  }, [canJoin, groupCode, joinGroup, navigation]);
+  }, [canJoin, groupCode, joinGroup, router]);
 
   const handleFinishCreate = useCallback(() => {
-    navigation.navigate('Dashboard');
-  }, [navigation]);
+    router.push('/(group)');
+  }, [router]);
 
   const renderSelectMode = () => (
     <View style={styles.centerBox}>
@@ -214,116 +215,3 @@ export function JoinOrCreateGroupScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#eff6ff',
-  },
-  flex: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 48,
-    justifyContent: 'center',
-  },
-  centerBox: {
-    alignItems: 'center',
-    gap: 24,
-  },
-  heroIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 24,
-    backgroundColor: '#3b82f6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1f2937',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#4b5563',
-  },
-  actions: {
-    width: '100%',
-    gap: 16,
-  },
-  buttonContentPrimary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  buttonTextPrimary: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  buttonContentGhost: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  buttonTextGhost: {
-    color: '#7c3aed',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  cardContent: {
-    gap: 16,
-  },
-  cardHeaderCenter: {
-    alignItems: 'center',
-    gap: 4,
-  },
-  codeBox: {
-    backgroundColor: '#dbeafe',
-    borderRadius: 16,
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#bfdbfe',
-  },
-  codeLabel: {
-    fontSize: 13,
-    color: '#4b5563',
-    marginBottom: 6,
-  },
-  codeValue: {
-    fontSize: 36,
-    letterSpacing: 8,
-    fontWeight: '700',
-    color: '#1d4ed8',
-    fontFamily: 'monospace',
-  },
-  infoText: {
-    fontSize: 13,
-    color: '#4b5563',
-    textAlign: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  halfButton: {
-    flex: 1,
-  },
-  codeInput: {
-    fontSize: 24,
-    letterSpacing: 6,
-    fontWeight: '600',
-  },
-});
