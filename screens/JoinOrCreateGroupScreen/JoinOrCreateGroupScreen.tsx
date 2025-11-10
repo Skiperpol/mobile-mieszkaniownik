@@ -3,7 +3,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
@@ -87,9 +86,9 @@ export default function JoinOrCreateGroupScreen() {
           </View>
         </Button>
 
-        <Button variant="ghost" onPress={() => setMode('join')}>
+        <Button variant="ghost" style={styles.whiteGhostButton} onPress={() => setMode('join')}>
           <View style={styles.buttonContentGhost}>
-            <Ionicons name="log-in-outline" size={22} color="#7c3aed" />
+            <Ionicons name="log-in-outline" size={22}/>
             <Text style={styles.buttonTextGhost}>Dołącz do grupy</Text>
           </View>
         </Button>

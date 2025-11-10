@@ -61,8 +61,10 @@ export const styles = StyleSheet.create({
       justifyContent: 'center',
       gap: 8,
     },
+    whiteGhostButton: {
+      backgroundColor: '#FFFFFF',
+    },
     buttonTextGhost: {
-      color: '#7c3aed',
       fontSize: 16,
       fontWeight: '600',
     },
