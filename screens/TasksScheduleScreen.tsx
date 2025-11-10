@@ -1,17 +1,46 @@
-import { useAppStore } from '../store/useAppStore';
-import { Header } from '../components/Header';
+import React, { useMemo } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
 import { BottomNav } from '../components/BottomNav';
+import { Header } from '../components/Header';
+import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Plus, CheckCircle2, Clock, User } from 'lucide-react';
-import { getUserName, getUserAvatar } from '../utils/userNames';
+import { Checkbox } from '../components/ui/checkbox';
+import { useAppStore } from '../store/useAppStore';
+import { getUserName } from '../utils/userNames';
 
 interface TasksScheduleScreenProps {
   onNavigate: (screen: string) => void;
   onTabChange: (tab: string) => void;
   onBack?: () => void;
 }
+
+const frequencyMeta: Record<
+  string,
+  {
+    label: string;
+    backgroundColor: string;
+    textColor: string;
+  }
+> = {
+  daily: {
+    label: 'Codziennie',
+    backgroundColor: '#fee2e2',
+    textColor: '#b91c1c',
+  },
+  weekly: {
+    label: 'Co tydzień',
+    backgroundColor: '#dbeafe',
+    textColor: '#1d4ed8',
+  },
+  monthly: {
+    label: 'Co miesiąc',
+    backgroundColor: '#dcfce7',
+    textColor: '#166534',
+  },
+};
 
 export function TasksScheduleScreen({ onNavigate, onTabChange, onBack }: TasksScheduleScreenProps) {
   const tasks = useAppStore((state) => state.tasks);
@@ -22,160 +51,184 @@ export function TasksScheduleScreen({ onNavigate, onTabChange, onBack }: TasksSc
   const boardPosts = useAppStore((state) => state.boardPosts);
   const calendarEvents = useAppStore((state) => state.calendarEvents);
 
-  // Calculate badges
-  const activeShoppingItems = shoppingList.filter((item) => !item.purchased).length;
-  const pendingTasks = tasks.filter((task) => !task.completed).length;
-  const upcomingEvents = calendarEvents.filter(
-    (event) => new Date(event.endDate) >= new Date()
-  ).length;
+  const activeShoppingItems = useMemo(
+    () => shoppingList.filter((item) => !item.purchased).length,
+    [shoppingList],
+  );
+  const pendingTasks = useMemo(() => tasks.filter((task) => !task.completed).length, [tasks]);
+  const upcomingEvents = useMemo(
+    () => calendarEvents.filter((event) => new Date(event.endDate) >= new Date()).length,
+    [calendarEvents],
+  );
 
   const myTasks = tasks.filter((task) => task.assignedTo === user?.id);
   const otherTasks = tasks.filter((task) => task.assignedTo !== user?.id);
-
-  const getFrequencyLabel = (frequency: string) => {
-    const labels: Record<string, string> = {
-      daily: 'Codziennie',
-      weekly: 'Co tydzień',
-      monthly: 'Co miesiąc',
-    };
-    return labels[frequency] || frequency;
-  };
-
-  const getFrequencyColor = (frequency: string) => {
-    const colors: Record<string, string> = {
-      daily: 'bg-red-100 text-red-700',
-      weekly: 'bg-blue-100 text-blue-700',
-      monthly: 'bg-green-100 text-green-700',
-    };
-    return colors[frequency] || 'bg-gray-100 text-gray-700';
-  };
 
   const handleComplete = (taskId: string) => {
     completeTask(taskId);
   };
 
-  const isOverdue = (dueDate: Date) => {
-    return new Date(dueDate) < new Date();
+  const isOverdue = (dueDate: Date) => new Date(dueDate) < new Date();
+
+  const renderFrequencyBadge = (frequency: string) => {
+    const meta = frequencyMeta[frequency] ?? {
+      label: frequency,
+      backgroundColor: '#e5e7eb',
+      textColor: '#374151',
+    };
+
+    return (
+      <Badge
+        key={`frequency-${frequency}`}
+        style={[styles.badge, { backgroundColor: meta.backgroundColor }]}
+        textProps={{ style: [styles.badgeText, { color: meta.textColor }] }}
+      >
+        {meta.label}
+      </Badge>
+    );
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <View style={styles.container}>
       <Header
         title="Harmonogram sprzątania"
         showBack
         onBack={onBack || (() => onNavigate('dashboard'))}
         rightAction={
-          <button
-            onClick={() => onNavigate('add-task')}
-            className="flex items-center justify-center w-10 h-10 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-          >
-            <Plus className="w-6 h-6" />
-          </button>
+          <Pressable onPress={() => onNavigate('add-task')} style={styles.headerAction} hitSlop={10}>
+            <Ionicons name="add" size={22} color="#2563eb" />
+          </Pressable>
         }
       />
 
-      <div className="pt-14 px-4 py-6">
-        <div className="max-w-lg mx-auto space-y-6">
-          {/* My Tasks */}
-          <div className="space-y-3">
-            <h3 className="text-lg">Twoje zadania ({myTasks.length})</h3>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Twoje zadania ({myTasks.length})</Text>
 
-            {myTasks.length === 0 ? (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-green-500" />
-                  <p className="text-gray-600">Nie masz żadnych zadań do wykonania</p>
-                </CardContent>
-              </Card>
-            ) : (
-              myTasks.map((task) => (
+          {myTasks.length === 0 ? (
+            <Card style={styles.card}>
+              <CardContent style={[styles.cardContent, styles.centerContent]}>
+                <Ionicons name="checkmark-circle-outline" size={48} color="#22c55e" style={styles.emptyIcon} />
+                <Text style={styles.emptyText}>Nie masz żadnych zadań do wykonania</Text>
+              </CardContent>
+            </Card>
+          ) : (
+            myTasks.map((task) => {
+              const overdue = isOverdue(task.dueDate);
+              return (
                 <Card
                   key={task.id}
-                  className={isOverdue(task.dueDate) ? 'border-red-200 bg-red-50' : ''}
+                  style={[styles.card, overdue ? styles.cardOverdue : undefined]}
                 >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <h4 className="mb-1">{task.title}</h4>
-                        {task.description && (
-                          <p className="text-sm text-gray-600 mb-2">{task.description}</p>
-                        )}
-                        <div className="flex flex-wrap gap-2">
-                          <Badge className={getFrequencyColor(task.frequency)}>
-                            {getFrequencyLabel(task.frequency)}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            <Clock className="w-3 h-3 mr-1" />
+                  <CardContent style={styles.cardContent}>
+                    <View style={styles.taskHeader}>
+                      <View style={styles.taskTitleWrapper}>
+                        <Text style={styles.taskTitle}>{task.title}</Text>
+                        {task.description ? (
+                          <Text style={styles.taskDescription}>{task.description}</Text>
+                        ) : null}
+                      </View>
+                    </View>
+
+                    <View style={styles.taskMeta}>
+                      {renderFrequencyBadge(task.frequency)}
+                      <Badge variant="outline" style={styles.badge} textProps={{ style: styles.badgeText }}>
+                        <View style={styles.badgeContent}>
+                          <Ionicons name="time-outline" size={14} color="#4338ca" style={styles.badgeIcon} />
+                          <Text style={styles.badgeText}>
                             {new Date(task.dueDate).toLocaleDateString('pl-PL')}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
+                          </Text>
+                        </View>
+                      </Badge>
+                    </View>
 
                     <Button
-                      onClick={() => handleComplete(task.id)}
-                      className="w-full"
-                      variant={isOverdue(task.dueDate) ? 'default' : 'outline'}
+                      variant={overdue ? 'primary' : 'outline'}
+                      style={styles.fullWidthButton}
+                      onPress={() => handleComplete(task.id)}
                     >
-                      <CheckCircle2 className="w-4 h-4 mr-2" />
-                      Oznacz jako wykonane
+                      <View style={styles.buttonContent}>
+                        <Ionicons
+                          name="checkmark-circle-outline"
+                          size={18}
+                          color={overdue ? '#ffffff' : '#4338ca'}
+                          style={styles.buttonIcon}
+                        />
+                        <Text style={[styles.buttonText, overdue ? styles.buttonTextPrimary : styles.buttonTextOutline]}>
+                          Oznacz jako wykonane
+                        </Text>
+                      </View>
                     </Button>
                   </CardContent>
                 </Card>
-              ))
-            )}
-          </div>
-
-          {/* Other Tasks */}
-          {otherTasks.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-lg">Zadania innych ({otherTasks.length})</h3>
-
-              {otherTasks.map((task) => (
-                <Card key={task.id} className="opacity-75">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className="mb-1">{task.title}</h4>
-                        {task.description && (
-                          <p className="text-sm text-gray-600 mb-2">{task.description}</p>
-                        )}
-                        <div className="flex flex-wrap gap-2">
-                          <Badge className={getFrequencyColor(task.frequency)}>
-                            {getFrequencyLabel(task.frequency)}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            <User className="w-3 h-3 mr-1" />
-                            {getUserName(task.assignedTo)}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            <Clock className="w-3 h-3 mr-1" />
-                            {new Date(task.dueDate).toLocaleDateString('pl-PL')}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+              );
+            })
           )}
+        </View>
 
-          {tasks.length === 0 && (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <p className="text-gray-500 mb-4">Brak zadań w harmonogramie</p>
-                <Button onClick={() => onNavigate('add-task')}>
-                  Dodaj pierwsze zadanie
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </div>
+        {otherTasks.length > 0 ? (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Zadania innych ({otherTasks.length})</Text>
 
-      <BottomNav 
-        activeTab="tasks" 
+            {otherTasks.map((task) => (
+              <Card key={task.id} style={styles.card}>
+                <CardContent style={styles.cardContent}>
+                  <View style={styles.taskHeader}>
+                    <View style={styles.taskTitleWrapper}>
+                      <Text style={styles.taskTitle}>{task.title}</Text>
+                      {task.description ? (
+                        <Text style={styles.taskDescription}>{task.description}</Text>
+                      ) : null}
+                    </View>
+                  </View>
+
+                  <View style={styles.taskMeta}>
+                    {renderFrequencyBadge(task.frequency)}
+                    <Badge variant="outline" style={styles.badge} textProps={{ style: styles.badgeText }}>
+                      <View style={styles.badgeContent}>
+                        <Ionicons
+                          name="person-outline"
+                          size={14}
+                          color="#4338ca"
+                          style={styles.badgeIcon}
+                        />
+                        <Text style={styles.badgeText}>{getUserName(task.assignedTo)}</Text>
+                      </View>
+                    </Badge>
+                    <Badge variant="outline" style={styles.badge} textProps={{ style: styles.badgeText }}>
+                      <View style={styles.badgeContent}>
+                        <Ionicons name="time-outline" size={14} color="#4338ca" style={styles.badgeIcon} />
+                        <Text style={styles.badgeText}>
+                          {new Date(task.dueDate).toLocaleDateString('pl-PL')}
+                        </Text>
+                      </View>
+                    </Badge>
+                  </View>
+                </CardContent>
+              </Card>
+            ))}
+          </View>
+        ) : null}
+
+        {tasks.length === 0 ? (
+          <Card style={styles.card}>
+            <CardContent style={[styles.cardContent, styles.centerContent]}>
+              <Ionicons name="sparkles-outline" size={48} color="#6366f1" style={styles.emptyIcon} />
+              <Text style={styles.emptyText}>Brak zadań w harmonogramie</Text>
+              <Button style={styles.fullWidthButton} onPress={() => onNavigate('add-task')}>
+                Dodaj pierwsze zadanie
+              </Button>
+            </CardContent>
+          </Card>
+        ) : null}
+      </ScrollView>
+
+      <BottomNav
+        activeTab="tasks"
         onTabChange={onTabChange}
         badges={{
           expenses: expenses.length,
@@ -185,6 +238,123 @@ export function TasksScheduleScreen({ onNavigate, onTabChange, onBack }: TasksSc
           board: boardPosts.length,
         }}
       />
-    </div>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9fafb',
+  },
+  scroll: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    paddingBottom: 100,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  card: {
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  cardOverdue: {
+    backgroundColor: '#fee2e2',
+    borderWidth: 1,
+    borderColor: '#fecaca',
+  },
+  cardContent: {
+    padding: 20,
+  },
+  centerContent: {
+    alignItems: 'center',
+  },
+  taskHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  taskTitleWrapper: {
+    flex: 1,
+  },
+  taskTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  taskDescription: {
+    fontSize: 14,
+    color: '#4b5563',
+  },
+  taskMeta: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  badge: {
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  badgeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  badgeIcon: {
+    marginRight: 4,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#4338ca',
+  },
+  fullWidthButton: {
+    width: '100%',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  buttonTextPrimary: {
+    color: '#ffffff',
+  },
+  buttonTextOutline: {
+    color: '#4338ca',
+  },
+  emptyIcon: {
+    marginBottom: 16,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#4b5563',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  headerAction: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e0f2fe',
+  },
+});

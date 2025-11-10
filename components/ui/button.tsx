@@ -10,7 +10,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   variant?: ButtonVariant;
+  size?: ButtonSize;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   accessibilityLabel?: string;
@@ -34,6 +36,12 @@ function getVariantStyles(variant: ButtonVariant | undefined) {
         container: styles.secondaryContainer,
         text: styles.secondaryText,
         indicator: '#ffffff',
+      };
+    case 'outline':
+      return {
+        container: styles.outlineContainer,
+        text: styles.outlineText,
+        indicator: PRIMARY_COLOR,
       };
     case 'ghost':
       return {
@@ -57,16 +65,19 @@ export function Button({
   disabled,
   loading,
   variant = 'primary',
+  size = 'md',
   style,
   textStyle,
   accessibilityLabel,
 }: ButtonProps) {
   const variantStyles = getVariantStyles(variant);
   const isDisabled = disabled || loading;
+  const sizeStyles = getSizeStyles(size);
 
   const pressableStyle = ({ pressed }: PressableStateCallbackType): StyleProp<ViewStyle> => [
     styles.base,
     variantStyles.container,
+    sizeStyles.container,
     pressed && !isDisabled ? styles.pressed : null,
     isDisabled ? styles.disabled : null,
     style,
@@ -83,7 +94,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator size="small" color={variantStyles.indicator} />
       ) : typeof children === 'string' ? (
-        <Text style={[styles.textBase, variantStyles.text, textStyle]}>{children}</Text>
+        <Text style={[styles.textBase, sizeStyles.text, variantStyles.text, textStyle]}>{children}</Text>
       ) : (
         children
       )}
@@ -91,15 +102,34 @@ export function Button({
   );
 }
 
+function getSizeStyles(size: ButtonSize) {
+  switch (size) {
+    case 'sm':
+      return {
+        container: styles.sizeSm,
+        text: styles.textSm,
+      };
+    case 'lg':
+      return {
+        container: styles.sizeLg,
+        text: styles.textLg,
+      };
+    case 'md':
+    default:
+      return {
+        container: styles.sizeMd,
+        text: styles.textMd,
+      };
+  }
+}
+
 const styles = StyleSheet.create({
   base: {
-    height: 48,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 16,
     flexDirection: 'row',
-    gap: 8,
   },
   primaryContainer: {
     backgroundColor: PRIMARY_COLOR,
@@ -112,6 +142,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e5e7eb',
   },
+  outlineContainer: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#c4b5fd',
+  },
   disabled: {
     backgroundColor: DISABLED_COLOR,
   },
@@ -120,8 +155,16 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   textBase: {
-    fontSize: 16,
     fontWeight: '600',
+  },
+  textMd: {
+    fontSize: 16,
+  },
+  textSm: {
+    fontSize: 14,
+  },
+  textLg: {
+    fontSize: 18,
   },
   primaryText: {
     color: '#ffffff',
@@ -131,6 +174,20 @@ const styles = StyleSheet.create({
   },
   ghostText: {
     color: PRIMARY_COLOR,
+  },
+  outlineText: {
+    color: PRIMARY_COLOR,
+  },
+  sizeSm: {
+    height: 40,
+    paddingHorizontal: 14,
+  },
+  sizeMd: {
+    height: 48,
+  },
+  sizeLg: {
+    height: 56,
+    paddingHorizontal: 20,
   },
 });
 

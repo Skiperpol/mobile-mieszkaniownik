@@ -1,9 +1,12 @@
-import { useAppStore } from '@/store/useAppStore';
-import { Header } from '@/components/Header';
-import { Button } from '@/components/ui2/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { User, Mail, Users, LogOut, Home } from 'lucide-react';
+import React from 'react';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+
+import { Header } from '@/components/Header';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { useAppStore } from '@/store/useAppStore';
 
 export default function UserProfileScreen() {
   const user = useAppStore((state) => state.user);
@@ -13,7 +16,7 @@ export default function UserProfileScreen() {
 
   const handleLogout = () => {
     logout();
-    router.push('/(auth)/login');
+    router.replace('/(auth)');
   };
 
   const handleLeaveGroup = () => {
@@ -22,107 +25,260 @@ export default function UserProfileScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header
-        title="Profil"
-        showBack
-        onBack={() => router.back()}
-      />
+    <View style={styles.container}>
+      <Header title="Profil" showBack onBack={() => router.back()} />
 
-      <div className="pt-14 px-4 py-6">
-        <div className="max-w-lg mx-auto space-y-6">
-          {/* User Info */}
-          <Card>
-            <CardContent className="p-6 text-center">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-3xl mx-auto mb-4">
-                {user?.name[0]?.toUpperCase()}
-              </div>
-              <h2 className="text-2xl mb-1">{user?.name}</h2>
-              <p className="text-gray-600">{user?.email}</p>
-            </CardContent>
-          </Card>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <Card style={styles.card}>
+          <CardContent style={[styles.cardContent, styles.centerContent]}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{user?.name?.[0]?.toUpperCase() ?? '?'}</Text>
+            </View>
+            <Text style={styles.userName}>{user?.name ?? 'Użytkownik'}</Text>
+            <Text style={styles.userEmail}>{user?.email}</Text>
+          </CardContent>
+        </Card>
 
-          {/* Group Info */}
-          {currentGroup && (
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <Home className="w-5 h-5 text-blue-700" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Twoja grupa</p>
-                    <p className="text-lg">{currentGroup.name}</p>
-                  </div>
-                </div>
+        {currentGroup ? (
+          <Card style={styles.card}>
+            <CardContent style={styles.cardContent}>
+              <View style={styles.groupHeader}>
+                <View style={styles.groupIcon}>
+                  <Ionicons name="home-outline" size={20} color="#1d4ed8" />
+                </View>
+                <View>
+                  <Text style={styles.groupLabel}>Twoja grupa</Text>
+                  <Text style={styles.groupName}>{currentGroup.name}</Text>
+                </View>
+              </View>
 
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => router.push('/group/members')}
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Zobacz członków
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Account Info */}
-          <Card>
-            <CardContent className="p-4 space-y-3">
-              <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-gray-600" />
-                <div>
-                  <p className="text-sm text-gray-600">Email</p>
-                  <p>{user?.email}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <User className="w-5 h-5 text-gray-600" />
-                <div>
-                  <p className="text-sm text-gray-600">ID użytkownika</p>
-                  <p className="text-sm font-mono">{user?.id}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Actions */}
-          <div className="space-y-3">
-            {currentGroup && (
               <Button
                 variant="outline"
-                className="w-full text-orange-600 hover:bg-orange-50"
-                onClick={handleLeaveGroup}
+                style={styles.fullWidthButton}
+                onPress={() => router.push('/(group)/members')}
               >
-                Opuść grupę
+                <View style={styles.buttonContent}>
+                  <Ionicons name="people-outline" size={18} color="#4c1d95" style={styles.buttonIcon} />
+                  <Text style={styles.buttonText}>Zobacz członków</Text>
+                </View>
               </Button>
-            )}
-
-            <Button
-              variant="outline"
-              className="w-full text-red-600 hover:bg-red-50"
-              onClick={handleLogout}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Wyloguj się
-            </Button>
-          </div>
-
-          {/* App Info */}
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="p-4">
-              <h3 className="mb-2">O aplikacji</h3>
-              <p className="text-sm text-gray-700">
-                <strong>Mieszkaniownik</strong> - aplikacja do zarządzania wspólnym mieszkaniem
-              </p>
-              <p className="text-xs text-gray-600 mt-2">Wersja 1.0.0</p>
             </CardContent>
           </Card>
-        </div>
-      </div>
-    </div>
+        ) : null}
+
+        <Card style={styles.card}>
+          <CardContent style={styles.cardContent}>
+            <View style={styles.row}>
+              <Ionicons name="mail-outline" size={20} color="#4b5563" />
+              <View style={styles.rowTextWrapper}>
+                <Text style={styles.rowLabel}>Email</Text>
+                <Text style={styles.rowValue}>{user?.email}</Text>
+              </View>
+            </View>
+
+            <View style={styles.row}>
+              <Ionicons name="person-circle-outline" size={20} color="#4b5563" />
+              <View style={styles.rowTextWrapper}>
+                <Text style={styles.rowLabel}>ID użytkownika</Text>
+                <Text style={styles.rowValueMono}>{user?.id}</Text>
+              </View>
+            </View>
+          </CardContent>
+        </Card>
+
+        <View style={styles.actions}>
+          {currentGroup ? (
+            <Button
+              variant="outline"
+              style={[styles.fullWidthButton, styles.leaveButton, styles.actionButton]}
+              textStyle={styles.leaveButtonText}
+              onPress={handleLeaveGroup}
+            >
+              Opuść grupę
+            </Button>
+          ) : null}
+
+          <Button
+            variant="outline"
+            style={[styles.fullWidthButton, styles.logoutButton, styles.actionButton]}
+            textStyle={styles.logoutButtonText}
+            onPress={handleLogout}
+          >
+            <View style={styles.buttonContent}>
+              <Ionicons name="log-out-outline" size={18} color="#b91c1c" style={styles.buttonIcon} />
+              <Text style={[styles.buttonText, styles.logoutButtonText]}>Wyloguj się</Text>
+            </View>
+          </Button>
+        </View>
+
+        <Card style={[styles.card, styles.infoCard]}>
+          <CardContent style={styles.cardContent}>
+            <Text style={styles.infoTitle}>O aplikacji</Text>
+            <Text style={styles.infoText}>
+              <Text style={styles.infoTextStrong}>Mieszkaniownik</Text> - aplikacja do zarządzania wspólnym mieszkaniem
+            </Text>
+            <Text style={styles.infoVersion}>Wersja 1.0.0</Text>
+          </CardContent>
+        </Card>
+      </ScrollView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9fafb',
+  },
+  scroll: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+  },
+  card: {
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  cardContent: {
+    padding: 20,
+  },
+  centerContent: {
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: '#6366f1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  avatarText: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#ffffff',
+  },
+  userName: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  userEmail: {
+    fontSize: 14,
+    color: '#4b5563',
+  },
+  groupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  groupIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#dbeafe',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  groupLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  groupName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  fullWidthButton: {
+    width: '100%',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#312e81',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  rowTextWrapper: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  rowLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginBottom: 2,
+  },
+  rowValue: {
+    fontSize: 16,
+    color: '#111827',
+  },
+  rowValueMono: {
+    fontSize: 14,
+    color: '#111827',
+    fontFamily: Platform.select({
+      ios: 'Menlo',
+      default: 'monospace',
+    }),
+  },
+  actions: {
+    marginBottom: 16,
+  },
+  actionButton: {
+    marginBottom: 12,
+  },
+  leaveButton: {
+    borderColor: '#fb923c',
+  },
+  leaveButtonText: {
+    color: '#c2410c',
+  },
+  logoutButton: {
+    borderColor: '#fca5a5',
+  },
+  logoutButtonText: {
+    color: '#b91c1c',
+  },
+  infoCard: {
+    backgroundColor: '#eff6ff',
+    borderWidth: 1,
+    borderColor: '#bfdbfe',
+  },
+  infoTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 8,
+    color: '#1d4ed8',
+  },
+  infoText: {
+    fontSize: 14,
+    color: '#1f2937',
+  },
+  infoTextStrong: {
+    fontWeight: '700',
+  },
+  infoVersion: {
+    fontSize: 12,
+    marginTop: 12,
+    color: '#4b5563',
+  },
+});

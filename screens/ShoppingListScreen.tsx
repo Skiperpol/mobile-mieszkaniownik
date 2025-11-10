@@ -1,11 +1,14 @@
-import { useAppStore } from '../store/useAppStore';
-import { Header } from '../components/Header';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
 import { BottomNav } from '../components/BottomNav';
+import { Header } from '../components/Header';
+import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
-import { Badge } from '../components/ui/badge';
-import { Plus, ShoppingBag, User } from 'lucide-react';
+import { useAppStore } from '../store/useAppStore';
 
 interface ShoppingListScreenProps {
   onNavigate: (screen: string) => void;
@@ -23,12 +26,9 @@ export function ShoppingListScreen({ onNavigate, onTabChange, onBack }: Shopping
   const boardPosts = useAppStore((state) => state.boardPosts);
   const calendarEvents = useAppStore((state) => state.calendarEvents);
 
-  // Calculate badges
   const activeShoppingItems = shoppingList.filter((item) => !item.purchased).length;
   const pendingTasks = tasks.filter((task) => !task.completed).length;
-  const upcomingEvents = calendarEvents.filter(
-    (event) => new Date(event.endDate) >= new Date()
-  ).length;
+  const upcomingEvents = calendarEvents.filter((event) => new Date(event.endDate) >= new Date()).length;
 
   const activeItems = shoppingList.filter((item) => !item.purchased);
   const purchasedItems = shoppingList.filter((item) => item.purchased);
@@ -42,121 +42,130 @@ export function ShoppingListScreen({ onNavigate, onTabChange, onBack }: Shopping
     markAsPurchased(itemId);
   };
 
+  const renderEmptyState = () => (
+    <Card style={styles.card}>
+      <CardContent style={[styles.cardContent, styles.centerContent]}>
+        <Ionicons name="cart-outline" size={48} color="#9ca3af" style={styles.emptyIcon} />
+        <Text style={styles.emptyTitle}>Lista zakupów jest pusta</Text>
+        <Text style={styles.emptySubtitle}>Dodaj produkty, które trzeba kupić</Text>
+        <Button style={styles.fullWidthButton} onPress={() => onNavigate('add-shopping-item')}>
+          Dodaj pierwszy produkt
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <View style={styles.container}>
       <Header
         title="Lista zakupów"
         showBack
         onBack={onBack || (() => onNavigate('dashboard'))}
         rightAction={
-          <button
-            onClick={() => onNavigate('add-shopping-item')}
-            className="flex items-center justify-center w-10 h-10 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-          >
-            <Plus className="w-6 h-6" />
-          </button>
+          <View style={styles.headerAction}>
+            <Ionicons
+              name="add"
+              size={24}
+              color="#2563eb"
+              onPress={() => onNavigate('add-shopping-item')}
+            />
+          </View>
         }
       />
 
-      <div className="pt-14 px-4 py-6">
-        <div className="max-w-lg mx-auto space-y-4">
-          {/* Active Items */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg">Do kupienia ({activeItems.length})</h3>
-            </div>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Do kupienia ({activeItems.length})</Text>
+          </View>
 
-            {activeItems.length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <ShoppingBag className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-500 mb-4">Lista zakupów jest pusta</p>
-                  <Button onClick={() => onNavigate('add-shopping-item')}>
-                    Dodaj pierwszy produkt
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              activeItems.map((item) => (
-                <Card key={item.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
+          {activeItems.length === 0
+            ? renderEmptyState()
+            : activeItems.map((item) => (
+                <Card key={item.id} style={styles.card}>
+                  <CardContent style={styles.cardContent}>
+                    <View style={styles.itemRow}>
                       <Checkbox
                         checked={item.purchased}
-                        onCheckedChange={() => handlePurchase(item.id)}
+                        onChange={() => handlePurchase(item.id)}
                         disabled={!item.claimedBy}
                       />
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-1">
-                          <div>
-                            <h4>{item.name}</h4>
-                            {item.quantity && (
-                              <p className="text-sm text-gray-600">{item.quantity}</p>
-                            )}
-                          </div>
-                          {item.estimatedPrice && (
-                            <p className="text-sm">{item.estimatedPrice.toFixed(2)} zł</p>
-                          )}
-                        </div>
 
-                        <div className="flex items-center gap-2 mt-2">
+                      <View style={styles.itemBody}>
+                        <View style={styles.itemHeader}>
+                          <View>
+                            <Text style={styles.itemTitle}>{item.name}</Text>
+                            {item.quantity ? <Text style={styles.itemSubtitle}>{item.quantity}</Text> : null}
+                          </View>
+
+                          {item.estimatedPrice ? (
+                            <Text style={styles.itemPrice}>{item.estimatedPrice.toFixed(2)} zł</Text>
+                          ) : null}
+                        </View>
+
+                        <View style={styles.itemFooter}>
                           {item.claimedBy ? (
-                            <Badge variant="secondary" className="text-xs">
-                              <User className="w-3 h-3 mr-1" />
-                              {item.claimedBy === user?.id ? 'Ty kupisz' : 'Ktoś kupuje'}
+                            <Badge
+                              variant="secondary"
+                              style={styles.badge}
+                              textProps={{ style: styles.badgeText }}
+                            >
+                              <View style={styles.badgeContent}>
+                                <Ionicons name="person-outline" size={14} color="#1d4ed8" style={styles.badgeIcon} />
+                                <Text style={[styles.badgeText, styles.badgeTextStrong]}>
+                                  {item.claimedBy === user?.id ? 'Ty kupisz' : 'Ktoś kupuje'}
+                                </Text>
+                              </View>
                             </Badge>
                           ) : (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleClaim(item.id)}
-                            >
+                            <Button size="sm" variant="outline" style={styles.claimButton} onPress={() => handleClaim(item.id)}>
                               Ja kupię
                             </Button>
                           )}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-
-          {/* Purchased Items */}
-          {purchasedItems.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-lg">Kupione ({purchasedItems.length})</h3>
-
-              {purchasedItems.map((item) => (
-                <Card key={item.id} className="opacity-60">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <Checkbox checked disabled />
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="line-through">{item.name}</h4>
-                            {item.quantity && (
-                              <p className="text-sm text-gray-600 line-through">{item.quantity}</p>
-                            )}
-                          </div>
-                          {item.estimatedPrice && (
-                            <p className="text-sm">{item.estimatedPrice.toFixed(2)} zł</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                        </View>
+                      </View>
+                    </View>
                   </CardContent>
                 </Card>
               ))}
-            </div>
-          )}
-        </div>
-      </div>
+        </View>
 
-      <BottomNav 
-        activeTab="shopping" 
+        {purchasedItems.length > 0 ? (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Kupione ({purchasedItems.length})</Text>
+
+            {purchasedItems.map((item) => (
+              <Card key={item.id} style={[styles.card, styles.purchasedCard]}>
+                <CardContent style={styles.cardContent}>
+                  <View style={styles.itemRow}>
+                    <Checkbox checked disabled />
+                    <View style={styles.itemBody}>
+                      <View style={styles.itemHeader}>
+                        <View>
+                          <Text style={[styles.itemTitle, styles.purchasedText]}>{item.name}</Text>
+                          {item.quantity ? (
+                            <Text style={[styles.itemSubtitle, styles.purchasedText]}>{item.quantity}</Text>
+                          ) : null}
+                        </View>
+                        {item.estimatedPrice ? (
+                          <Text style={styles.itemPrice}>{item.estimatedPrice.toFixed(2)} zł</Text>
+                        ) : null}
+                      </View>
+                    </View>
+                  </View>
+                </CardContent>
+              </Card>
+            ))}
+          </View>
+        ) : null}
+      </ScrollView>
+
+      <BottomNav
+        activeTab="shopping"
         onTabChange={onTabChange}
         badges={{
           expenses: expenses.length,
@@ -166,6 +175,131 @@ export function ShoppingListScreen({ onNavigate, onTabChange, onBack }: Shopping
           board: boardPosts.length,
         }}
       />
-    </div>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9fafb',
+  },
+  scroll: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    paddingBottom: 100,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  card: {
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  purchasedCard: {
+    opacity: 0.7,
+  },
+  cardContent: {
+    padding: 16,
+  },
+  centerContent: {
+    alignItems: 'center',
+  },
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  itemBody: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  itemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  itemSubtitle: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginTop: 4,
+  },
+  itemPrice: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#0f172a',
+  },
+  itemFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  claimButton: {
+    paddingHorizontal: 20,
+  },
+  badge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  badgeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  badgeIcon: {
+    marginRight: 6,
+  },
+  badgeText: {
+    fontSize: 12,
+    color: '#1d4ed8',
+  },
+  badgeTextStrong: {
+    fontWeight: '600',
+  },
+  purchasedText: {
+    textDecorationLine: 'line-through',
+    color: '#6b7280',
+  },
+  emptyIcon: {
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  fullWidthButton: {
+    width: '100%',
+  },
+  headerAction: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e0f2fe',
+  },
+});

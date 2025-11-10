@@ -1,177 +1,310 @@
-import { useAppStore } from '../store/useAppStore';
+import React, { useMemo } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
 import { Header } from '../components/Header';
 import { Card, CardContent } from '../components/ui/card';
-import { TrendingUp, TrendingDown, DollarSign, PieChart } from 'lucide-react';
+import { useAppStore } from '../store/useAppStore';
 
 interface MonthlyReportScreenProps {
   onNavigate: (screen: string) => void;
   onBack?: () => void;
 }
 
+const CATEGORY_META: Record<string, { label: string; color: string }> = {
+  food: { label: 'Jedzenie', color: '#f97316' },
+  shopping: { label: 'Zakupy', color: '#2563eb' },
+  utilities: { label: 'Rachunki', color: '#16a34a' },
+  entertainment: { label: 'Rozrywka', color: '#8b5cf6' },
+  settlement: { label: 'Rozliczenia', color: '#4b5563' },
+  other: { label: 'Inne', color: '#ec4899' },
+};
+
 export function MonthlyReportScreen({ onNavigate, onBack }: MonthlyReportScreenProps) {
   const expenses = useAppStore((state) => state.expenses);
   const currentGroup = useAppStore((state) => state.currentGroup);
 
-  // Current month expenses
   const now = new Date();
+  const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
   const currentMonthExpenses = expenses.filter((expense) => {
     const expenseDate = new Date(expense.date);
     return (
-      expenseDate.getMonth() === now.getMonth() &&
-      expenseDate.getFullYear() === now.getFullYear()
+      expenseDate.getFullYear() === now.getFullYear() &&
+      expenseDate.getMonth() === now.getMonth()
     );
   });
 
-  // Previous month expenses
-  const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const previousMonthExpenses = expenses.filter((expense) => {
     const expenseDate = new Date(expense.date);
     return (
-      expenseDate.getMonth() === previousMonth.getMonth() &&
-      expenseDate.getFullYear() === previousMonth.getFullYear()
+      expenseDate.getFullYear() === previousMonth.getFullYear() &&
+      expenseDate.getMonth() === previousMonth.getMonth()
     );
   });
 
-  const currentTotal = currentMonthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-  const previousTotal = previousMonthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const currentTotal = useMemo(
+    () => currentMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0),
+    [currentMonthExpenses],
+  );
+  const previousTotal = useMemo(
+    () => previousMonthExpenses.reduce((sum, expense) => sum + expense.amount, 0),
+    [previousMonthExpenses],
+  );
   const difference = currentTotal - previousTotal;
-  const percentChange = previousTotal > 0 ? ((difference / previousTotal) * 100) : 0;
+  const percentChange = previousTotal > 0 ? (difference / previousTotal) * 100 : 0;
+  const averagePerMember = currentTotal / Math.max(currentGroup?.members.length ?? 1, 1);
 
-  // Category breakdown
-  const categoryTotals: Record<string, number> = {};
-  currentMonthExpenses.forEach((expense) => {
-    categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + expense.amount;
-  });
+  const categoryTotals = useMemo(() => {
+    const totals: Record<string, number> = {};
+    currentMonthExpenses.forEach((expense) => {
+      totals[expense.category] = (totals[expense.category] ?? 0) + expense.amount;
+    });
+    return Object.entries(totals)
+      .sort(([, amountA], [, amountB]) => amountB - amountA)
+      .map(([category, amount]) => ({ category, amount }));
+  }, [currentMonthExpenses]);
 
-  const sortedCategories = Object.entries(categoryTotals)
-    .sort(([, a], [, b]) => b - a)
-    .map(([category, amount]) => ({ category, amount }));
-
-  const getCategoryLabel = (category: string) => {
-    const labels: Record<string, string> = {
-      food: 'Jedzenie',
-      shopping: 'Zakupy',
-      utilities: 'Rachunki',
-      entertainment: 'Rozrywka',
-      settlement: 'Rozliczenia',
-      other: 'Inne',
-    };
-    return labels[category] || category;
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      food: 'bg-orange-500',
-      shopping: 'bg-blue-500',
-      utilities: 'bg-green-500',
-      entertainment: 'bg-purple-500',
-      settlement: 'bg-gray-500',
-      other: 'bg-pink-500',
-    };
-    return colors[category] || colors.other;
-  };
-
-  const averagePerMember = currentTotal / (currentGroup?.members.length || 1);
+  const renderSummaryCard = (
+    icon: React.ReactNode,
+    label: string,
+    value: string,
+    accentColor?: string,
+  ) => (
+    <Card style={[styles.card, styles.summaryCard]}>
+      <CardContent style={styles.cardContent}>
+        <View style={styles.summaryHeader}>
+          <View style={[styles.summaryIconWrapper, accentColor ? { backgroundColor: accentColor } : null]}>
+            {icon}
+          </View>
+          <Text style={styles.summaryLabel}>{label}</Text>
+        </View>
+        <Text style={styles.summaryValue}>{value}</Text>
+      </CardContent>
+    </Card>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header
-        title="Raport miesięczny"
-        showBack
-        onBack={onBack || (() => onNavigate('expenses'))}
-      />
+    <View style={styles.container}>
+      <Header title="Raport miesięczny" showBack onBack={onBack || (() => onNavigate('expenses'))} />
 
-      <div className="pt-14 px-4 py-6">
-        <div className="max-w-lg mx-auto space-y-6">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-2 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="w-4 h-4 text-gray-600" />
-                  <p className="text-sm text-gray-600">Obecny miesiąc</p>
-                </div>
-                <p className="text-2xl">{currentTotal.toFixed(2)} zł</p>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.summaryRow}>
+          {renderSummaryCard(
+            <Ionicons name="cash-outline" size={18} color="#1f2937" />,
+            'Obecny miesiąc',
+            `${currentTotal.toFixed(2)} zł`,
+            '#e0f2fe',
+          )}
+          {renderSummaryCard(
+            <Ionicons
+              name={difference >= 0 ? 'trending-up-outline' : 'trending-down-outline'}
+              size={18}
+              color={difference >= 0 ? '#b91c1c' : '#15803d'}
+            />,
+            'Zmiana',
+            `${difference >= 0 ? '+' : ''}${percentChange.toFixed(0)}%`,
+            difference >= 0 ? '#fee2e2' : '#dcfce7',
+          )}
+        </View>
+
+        <Card style={styles.card}>
+          <CardContent style={styles.cardContent}>
+            <View style={styles.statRow}>
+              <Text style={styles.statLabel}>Poprzedni miesiąc</Text>
+              <Text style={styles.statValue}>{previousTotal.toFixed(2)} zł</Text>
+            </View>
+            <View style={styles.statRow}>
+              <Text style={styles.statLabel}>Liczba wydatków</Text>
+              <Text style={styles.statValue}>{currentMonthExpenses.length}</Text>
+            </View>
+            <View style={styles.statRow}>
+              <Text style={styles.statLabel}>Średnia na osobę</Text>
+              <Text style={styles.statValue}>{averagePerMember.toFixed(2)} zł</Text>
+            </View>
+          </CardContent>
+        </Card>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Wydatki według kategorii</Text>
+
+          {categoryTotals.length === 0 ? (
+            <Card style={styles.card}>
+              <CardContent style={[styles.cardContent, styles.centerContent]}>
+                <Ionicons name="pie-chart-outline" size={48} color="#9ca3af" style={styles.emptyIcon} />
+                <Text style={styles.emptyText}>Brak wydatków w tym miesiącu</Text>
               </CardContent>
             </Card>
+          ) : (
+            categoryTotals.map(({ category, amount }) => {
+              const meta = CATEGORY_META[category] ?? CATEGORY_META.other;
+              const percentage = currentTotal > 0 ? (amount / currentTotal) * 100 : 0;
 
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  {difference >= 0 ? (
-                    <TrendingUp className="w-4 h-4 text-red-600" />
-                  ) : (
-                    <TrendingDown className="w-4 h-4 text-green-600" />
-                  )}
-                  <p className="text-sm text-gray-600">Zmiana</p>
-                </div>
-                <p className={`text-2xl ${difference >= 0 ? 'text-red-600' : 'text-green-600'}`}>
-                  {difference >= 0 ? '+' : ''}
-                  {percentChange.toFixed(0)}%
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Stats */}
-          <Card>
-            <CardContent className="p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Poprzedni miesiąc</p>
-                <p>{previousTotal.toFixed(2)} zł</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Liczba wydatków</p>
-                <p>{currentMonthExpenses.length}</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">Średnia na osobę</p>
-                <p>{averagePerMember.toFixed(2)} zł</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Category Breakdown */}
-          <div className="space-y-3">
-            <h3 className="text-lg">Wydatki według kategorii</h3>
-
-            {sortedCategories.length === 0 ? (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <PieChart className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                  <p className="text-gray-500">Brak wydatków w tym miesiącu</p>
-                </CardContent>
-              </Card>
-            ) : (
-              sortedCategories.map(({ category, amount }) => {
-                const percentage = (amount / currentTotal) * 100;
-                return (
-                  <Card key={category}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-4 h-4 rounded ${getCategoryColor(category)}`} />
-                          <p>{getCategoryLabel(category)}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="mb-1">{amount.toFixed(2)} zł</p>
-                          <p className="text-xs text-gray-600">{percentage.toFixed(1)}%</p>
-                        </div>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full ${getCategoryColor(category)}`}
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+              return (
+                <Card key={category} style={styles.card}>
+                  <CardContent style={styles.cardContent}>
+                    <View style={styles.categoryHeader}>
+                      <View style={styles.categoryLabel}>
+                        <View style={[styles.categoryDot, { backgroundColor: meta.color }]} />
+                        <Text style={styles.categoryName}>{meta.label}</Text>
+                      </View>
+                      <View style={styles.categoryValueWrapper}>
+                        <Text style={styles.categoryAmount}>{amount.toFixed(2)} zł</Text>
+                        <Text style={styles.categoryPercentage}>{percentage.toFixed(1)}%</Text>
+                      </View>
+                    </View>
+                    <View style={styles.progressTrack}>
+                      <View
+                        style={[
+                          styles.progressBar,
+                          {
+                            backgroundColor: meta.color,
+                            width: `${Math.max(Math.min(percentage, 100), 0)}%`,
+                          },
+                        ]}
+                      />
+                    </View>
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9fafb',
+  },
+  scroll: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    paddingBottom: 40,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  summaryCard: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  card: {
+    borderRadius: 16,
+    marginBottom: 16,
+  },
+  cardContent: {
+    padding: 20,
+  },
+  summaryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  summaryIconWrapper: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  summaryLabel: {
+    fontSize: 13,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  summaryValue: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  statRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  statValue: {
+    fontSize: 16,
+    color: '#111827',
+    fontWeight: '600',
+  },
+  section: {
+    marginTop: 8,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
+  },
+  centerContent: {
+    alignItems: 'center',
+  },
+  emptyIcon: {
+    marginBottom: 12,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#4b5563',
+    textAlign: 'center',
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  categoryLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  categoryDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 10,
+  },
+  categoryName: {
+    fontSize: 16,
+    color: '#111827',
+    fontWeight: '600',
+  },
+  categoryValueWrapper: {
+    alignItems: 'flex-end',
+  },
+  categoryAmount: {
+    fontSize: 16,
+    color: '#111827',
+    fontWeight: '600',
+  },
+  categoryPercentage: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  progressTrack: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#e5e7eb',
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+  },
+});

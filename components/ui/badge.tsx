@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TextProps, View, ViewProps } from 'react-native';
 
 export interface BadgeProps extends ViewProps {
-  variant?: 'default' | 'outline' | 'success' | 'warning' | 'danger';
+  variant?: 'default' | 'outline' | 'success' | 'warning' | 'danger' | 'secondary';
   textProps?: TextProps;
 }
 
@@ -31,6 +31,14 @@ const variants = {
     },
     text: {
       color: '#166534',
+    },
+  },
+  secondary: {
+    container: {
+      backgroundColor: '#dbeafe',
+    },
+    text: {
+      color: '#1d4ed8',
     },
   },
   warning: {

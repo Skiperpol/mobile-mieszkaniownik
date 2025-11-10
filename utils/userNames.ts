@@ -20,13 +20,13 @@ export const getUserAvatar = (userId: string): string => {
   return userAvatars[userId] || '👤';
 };
 
-// Helper function to get user color
-export const getUserColor = (userId: string): string => {
-  const userColors: Record<string, string> = {
-    'user-1': 'from-purple-400 to-pink-500',
-    'user-2': 'from-blue-400 to-indigo-500',
-    'user-3': 'from-orange-400 to-red-500',
+// Helper function to get user gradient colors
+export const getUserColor = (userId: string): readonly [string, string] => {
+  const userColors: Record<string, readonly [string, string]> = {
+    'user-1': ['#a855f7', '#ec4899'],
+    'user-2': ['#38bdf8', '#6366f1'],
+    'user-3': ['#fb923c', '#ef4444'],
   };
-  
-  return userColors[userId] || 'from-gray-400 to-gray-500';
+
+  return userColors[userId] || ['#9ca3af', '#6b7280'];
 };
