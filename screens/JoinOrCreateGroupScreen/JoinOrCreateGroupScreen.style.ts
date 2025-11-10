@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-    root: {
+    gradient: {
       flex: 1,
-      backgroundColor: '#eff6ff',
+      justifyContent: 'center',
     },
     flex: {
       flex: 1,
@@ -71,6 +71,39 @@ export const styles = StyleSheet.create({
     cardContent: {
       gap: 16,
     },
+    joinCard: {
+      width: '100%',
+      borderRadius: 24,
+      paddingVertical: 8,
+      paddingHorizontal: 4,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.08,
+      shadowRadius: 24,
+      elevation: 12,
+    },
+    joinCardContent: {
+      gap: 16,
+      paddingTop: 8,
+    },
+    joinTitle: {
+      fontSize: 22,
+      fontWeight: '700',
+    },
+    joinDescription: {
+      fontSize: 16,
+      color: '#6b7280',
+    },
+    inputWrapper: {
+      gap: 8,
+    },
+    label: {
+      fontSize: 14,
+      color: '#4b5563',
+    },
+    fullWidthButton: {
+      width: '100%',
+    },
     cardHeaderCenter: {
       alignItems: 'center',
       gap: 4,
@@ -101,8 +134,8 @@ export const styles = StyleSheet.create({
       color: '#4b5563',
       textAlign: 'center',
     },
-    buttonRow: {
-      flexDirection: 'row',
+    buttonColumn: {
+      flexDirection: 'column',
       gap: 12,
     },
     halfButton: {
@@ -112,5 +145,10 @@ export const styles = StyleSheet.create({
       fontSize: 24,
       letterSpacing: 6,
       fontWeight: '600',
+      backgroundColor: '#f3f4f6',
+      borderWidth: 1,
+      borderColor: '#e5e7eb',
+      borderRadius: 12,
+      paddingVertical: 12,
     },
   });

@@ -3,3 +3,4 @@ import JoinOrCreateGroupScreen from '@/screens/JoinOrCreateGroupScreen/JoinOrCre
 export default function JoinOrCreate() {
   return <JoinOrCreateGroupScreen />;
 }
+

@@ -9,6 +9,7 @@ import {
   Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -68,6 +69,10 @@ export default function JoinOrCreateGroupScreen() {
 
   const handleFinishCreate = useCallback(() => {
     router.push('/(group)');
+  }, [router]);
+
+  const handleScanQr = useCallback(() => {
+    router.push('/join-or-create/scan-qr');
   }, [router]);
 
   const renderSelectMode = () => (
@@ -136,7 +141,7 @@ export default function JoinOrCreateGroupScreen() {
               autoCapitalize="words"
             />
 
-            <View style={styles.buttonRow}>
+            <View style={styles.buttonColumn}>
               <Button variant="ghost" style={styles.halfButton} onPress={() => setMode('select')}>
                 Wstecz
               </Button>
@@ -157,43 +162,56 @@ export default function JoinOrCreateGroupScreen() {
 
   const renderJoinMode = () => (
     <View style={styles.centerBox}>
-      <Card>
+      <Card style={styles.joinCard}>
         <CardHeader>
-          <CardTitle>Dołącz do grupy</CardTitle>
-          <CardDescription>Wpisz kod otrzymany od współlokatora</CardDescription>
+          <CardTitle style={styles.joinTitle}>Dołącz do grupy</CardTitle>
+          <CardDescription style={styles.joinDescription}>
+            Wpisz lub zeskanuj kod otrzymany od współlokatora
+          </CardDescription>
         </CardHeader>
-        <CardContent style={styles.cardContent}>
-          <Label>Kod grupy</Label>
-          <Input
-            value={groupCode}
-            onChangeText={(text) => setGroupCode(text.toUpperCase())}
-            placeholder="ABC123"
-            autoCapitalize="characters"
-            maxLength={6}
-            textAlign="center"
-            style={styles.codeInput}
-          />
-
-          <View style={styles.buttonRow}>
-            <Button variant="ghost" style={styles.halfButton} onPress={() => setMode('select')}>
-              Wstecz
-            </Button>
-            <Button
-              style={styles.halfButton}
-              onPress={handleJoinGroup}
-              disabled={!canJoin || loading}
-              loading={loading}
-            >
-              {loading ? 'Dołączanie...' : 'Dołącz'}
-            </Button>
+        <CardContent style={styles.joinCardContent}>
+          <View style={styles.inputWrapper}>
+            <Label style={styles.label}>Kod grupy</Label>
+            <Input
+              value={groupCode}
+              onChangeText={(text) => setGroupCode(text.toUpperCase())}
+              placeholder="ABC123"
+              autoCapitalize="characters"
+              maxLength={6}
+              textAlign="center"
+              style={styles.codeInput}
+            />
           </View>
+
+          <Button
+            onPress={handleJoinGroup}
+            disabled={!canJoin || loading}
+            loading={loading}
+            style={styles.fullWidthButton}
+          >
+            {loading ? 'Dołączanie...' : 'Dołącz'}
+          </Button>
+          <Button
+            variant="secondary"
+            onPress={handleScanQr}
+            style={styles.fullWidthButton}
+          >
+            Zeskanuj kod QR
+          </Button>
+          <Button
+            variant="ghost"
+            onPress={() => setMode('select')}
+            style={styles.fullWidthButton}
+          >
+            Wstecz
+          </Button>
         </CardContent>
       </Card>
     </View>
   );
 
   return (
-    <View style={styles.root}>
+    <LinearGradient colors={['#f3f7ff', '#ffffff']} style={styles.gradient}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.select({ ios: 'padding', android: undefined })}
@@ -211,6 +229,6 @@ export default function JoinOrCreateGroupScreen() {
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-    </View>
+    </LinearGradient>
   );
 }
