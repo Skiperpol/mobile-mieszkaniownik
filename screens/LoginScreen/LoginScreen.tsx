@@ -42,9 +42,9 @@ export default function LoginScreen() {
   }, [email, login, router, password]);
 
   return (
-    <LinearGradient colors={['#7c3aed', '#ec4899', '#f97316']} style={styles.gradient}>
+    <LinearGradient colors={['#46FF6E', '#259FB3', '#0414FF']} style={styles.gradient}>
       <KeyboardAvoidingView
-        behavior={Platform.select({ ios: 'padding', android: undefined })}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
       >
@@ -56,7 +56,7 @@ export default function LoginScreen() {
           >
             <View style={styles.logoBox}>
               <View style={styles.logoCircle}>
-                <Ionicons name="home" size={42} color="#7c3aed" />
+                <Ionicons name="home" size={42} color="#155DFC" />
               </View>
               <Text style={styles.title}>Mieszkaniownik</Text>
               <Text style={styles.subtitle}>Zarządzaj wspólnym mieszkaniem</Text>
@@ -72,6 +72,7 @@ export default function LoginScreen() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   textContentType="emailAddress"
+                  autoComplete="email"
                 />
               </View>
 
@@ -83,23 +84,24 @@ export default function LoginScreen() {
                   placeholder="••••••••"
                   secureTextEntry
                   textContentType="password"
+                  autoComplete="off"
                 />
               </View>
 
               <Button onPress={handleLogin} loading={loading}>
                 {loading ? 'Logowanie...' : 'Zaloguj się'}
               </Button>
-            </View>
-
-            <View style={styles.footer}>
+              <View style={styles.footer}>
               <Text style={styles.footerText}>
                 Nie masz konta?{' '}
                 <Text style={styles.footerLink} onPress={() => router.push('/register')}>
                   Zarejestruj się
                 </Text>
               </Text>
-              <Text style={styles.hint}>💡 Użyj dowolnego emaila, aby zobaczyć demo z przykładowymi danymi</Text>
             </View>
+            </View>
+
+
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>

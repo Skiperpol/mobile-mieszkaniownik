@@ -60,13 +60,11 @@ export const styles = StyleSheet.create({
       gap: 12,
     },
     footerText: {
-      color: 'rgba(255,255,255,0.9)',
       fontSize: 15,
     },
     footerLink: {
-      color: '#ffffff',
+      color: '#155DFC',
       fontWeight: '700',
-      textDecorationLine: 'underline',
     },
     hint: {
       color: 'rgba(255,255,255,0.8)',

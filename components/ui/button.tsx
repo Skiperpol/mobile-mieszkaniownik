@@ -25,7 +25,7 @@ export interface ButtonProps {
   accessibilityLabel?: string;
 }
 
-const PRIMARY_COLOR = '#7c3aed';
+const PRIMARY_COLOR = '#155DFC';
 const SECONDARY_COLOR = '#3b82f6';
 const DISABLED_COLOR = '#d1d5db';
 

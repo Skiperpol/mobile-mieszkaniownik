@@ -14,8 +14,10 @@
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE"
       },
+      "softwareKeyboardLayoutMode": "resize",
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.mobilemieszkaniownik"
     },
     "web": {
       "output": "static"
