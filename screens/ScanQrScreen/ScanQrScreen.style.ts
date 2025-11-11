@@ -5,6 +5,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#eff6ff',
     paddingTop: 48,
+    paddingBottom: 32,
     paddingHorizontal: 24,
   },
   header: {
@@ -111,6 +112,12 @@ const styles = StyleSheet.create({
   },
   actions: {
     marginTop: 24,
+  },
+  backButton: {
+    marginTop: 24,
+    alignSelf: 'center',
+    backgroundColor: '#ffffff',
+    width: '100%',
   },
 });
 

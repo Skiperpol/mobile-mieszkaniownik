@@ -86,6 +86,35 @@ export const styles = StyleSheet.create({
       gap: 16,
       paddingTop: 8,
     },
+    createCard: {
+      width: '100%',
+      borderRadius: 28,
+      borderWidth: 1,
+      borderColor: '#e5e7eb',
+      backgroundColor: '#ffffff',
+      paddingHorizontal: 12,
+      paddingVertical: 16,
+      shadowColor: '#1f2937',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.05,
+      shadowRadius: 20,
+      elevation: 8,
+    },
+    createHeader: {
+      gap: 8,
+    },
+    createTitle: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: '#111827',
+    },
+    createDescription: {
+      fontSize: 16,
+      color: '#6b7280',
+    },
+    createContent: {
+      gap: 24,
+    },
     joinTitle: {
       fontSize: 22,
       fontWeight: '700',
@@ -97,25 +126,47 @@ export const styles = StyleSheet.create({
     inputWrapper: {
       gap: 8,
     },
+    textInput: {
+      backgroundColor: '#f4f4f5',
+      borderRadius: 16,
+      borderWidth: 0,
+      paddingVertical: 16,
+      fontSize: 16,
+      padding: 22,
+    },
     label: {
       fontSize: 14,
       color: '#4b5563',
     },
     fullWidthButton: {
       width: '100%',
+      borderRadius: 18,
+      height: 56,
+    },
+    fullWidthColumn: {
+      width: '100%',
+      gap: 12,
+    },
+    primaryButton: {
+      backgroundColor: '#155DFC',
+    },
+    secondaryButton: {
+      borderWidth: 1,
+      borderColor: '#d1d5db',
     },
     cardHeaderCenter: {
       alignItems: 'center',
       gap: 4,
     },
     codeBox: {
-      backgroundColor: '#dbeafe',
-      borderRadius: 16,
-      paddingVertical: 20,
-      paddingHorizontal: 16,
+      width: '100%',
+      backgroundColor: '#e3edff',
+      borderRadius: 20,
+      paddingVertical: 18,
+      paddingHorizontal: 20,
       alignItems: 'center',
       borderWidth: 1,
-      borderColor: '#bfdbfe',
+      borderColor: '#c6d7ff',
     },
     codeLabel: {
       fontSize: 13,
@@ -151,4 +202,50 @@ export const styles = StyleSheet.create({
       borderRadius: 12,
       paddingVertical: 12,
     },
-  });
+    qrCard: {
+      width: '100%',
+      borderRadius: 28,
+      paddingHorizontal: 20,
+      paddingVertical: 28,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 10 },
+      shadowOpacity: 0.08,
+      shadowRadius: 24,
+      elevation: 14,
+    },
+    qrCardContent: {
+      alignItems: 'center',
+      gap: 24,
+    },
+    qrImageWrapper: {
+      padding: 12,
+      borderRadius: 20,
+      backgroundColor: '#ffffff',
+      borderWidth: 1,
+      borderColor: '#e5e7eb',
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.05,
+      shadowRadius: 16,
+      elevation: 8,
+    },
+    qrTextGroup: {
+      alignItems: 'center',
+      gap: 6,
+    },
+    qrTitle: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: '#111827',
+    },
+    qrSubtitle: {
+      fontSize: 15,
+      color: '#6b7280',
+      textAlign: 'center',
+    },
+    qrButton: {
+      alignSelf: 'stretch',
+      borderRadius: 18,
+      height: 56,
+    },
+  }) as Record<string, any>;

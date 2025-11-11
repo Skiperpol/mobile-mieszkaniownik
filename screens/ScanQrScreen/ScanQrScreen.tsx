@@ -126,7 +126,7 @@ export default function ScanQrScreen() {
       ) : null}
 
       <View style={styles.actions}>
-        <Button variant="ghost" onPress={() => router.back()}>
+        <Button style={styles.backButton} variant="ghost" onPress={() => router.back()}>
           Wstecz
         </Button>
       </View>

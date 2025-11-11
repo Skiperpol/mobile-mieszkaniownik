@@ -16,10 +16,10 @@ export const styles = StyleSheet.create({
       gap: 22,
     },
     form: {
-      gap: 18,
+      gap: 22,
     },
     field: {
-      gap: 8,
+      gap: 2,
     },
     error: {
       color: '#b91c1c',
