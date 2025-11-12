@@ -79,20 +79,35 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
   },
   amountInputWrapper: {
+    flex: 1,
+    maxWidth: 140,
+    marginLeft: 8,
+  },
+  amountInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    flex: 1,
-    maxWidth: 120,
+    backgroundColor: '#F3F3F5',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    paddingLeft: 12,
+    paddingRight: 12,
+    height: 48,
   },
   memberAmountInput: {
     flex: 1,
-    minWidth: 80,
+    fontSize: 16,
+    color: '#111827',
+    padding: 0,
+    margin: 0,
+    textAlign: 'right',
   },
   currencyText: {
     fontSize: 14,
     color: '#6b7280',
-    fontWeight: '500',
+    fontWeight: '600',
+    marginLeft: 8,
+    minWidth: 20,
   },
   summaryBox: {
     backgroundColor: '#f9fafb',
@@ -135,5 +150,12 @@ export const styles = StyleSheet.create({
   submitButton: {
     width: '100%',
     marginTop: 8,
+  },
+  noMembersText: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontStyle: 'italic',
+    paddingVertical: 16,
+    textAlign: 'center',
   },
 });

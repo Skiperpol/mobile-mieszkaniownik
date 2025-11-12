@@ -5,6 +5,7 @@ import {
   Pressable,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -76,6 +77,7 @@ export default function AddExpenseScreen() {
       });
       setMemberAmounts(initialAmounts);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentGroup]);
 
 
@@ -256,14 +258,17 @@ export default function AddExpenseScreen() {
                     </Text>
                     {selectedMembers.has(memberId) && (
                       <View style={styles.amountInputWrapper}>
-                        <Input
-                          placeholder="0.00"
-                          keyboardType="decimal-pad"
-                          value={memberAmounts[memberId] || ''}
-                          onChangeText={(value) => handleMemberAmountChange(memberId, value)}
-                          style={styles.memberAmountInput}
-                        />
-                        <Text style={styles.currencyText}>zł</Text>
+                        <View style={styles.amountInputContainer}>
+                          <TextInput
+                            placeholder="0.00"
+                            placeholderTextColor="#9ca3af"
+                            keyboardType="decimal-pad"
+                            value={memberAmounts[memberId] || ''}
+                            onChangeText={(value) => handleMemberAmountChange(memberId, value)}
+                            style={styles.memberAmountInput}
+                          />
+                          <Text style={styles.currencyText}>zł</Text>
+                        </View>
                       </View>
                     )}
                   </View>

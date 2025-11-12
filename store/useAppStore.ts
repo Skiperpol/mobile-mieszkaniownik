@@ -244,17 +244,20 @@ export const useAppStore = create<AppState>((set, get) => ({
     const userId = get().user?.id || '';
     const code = Math.random().toString(36).substr(2, 6).toUpperCase();
     const groupId = Math.random().toString(36).substr(2, 9);
+    // Domyślnie dodaj innych użytkowników do grupy (dla mock data)
+    const otherUsers = ['user-2', 'user-3'];
+    const allMembers = [userId, ...otherUsers];
     const group: Group = {
       id: groupId,
       name,
       code,
       createdBy: userId,
-      members: [userId],
+      members: allMembers,
       createdAt: new Date(),
     };
     
-    // Add mock data for the new group
-    const mockData = createMockData(groupId, userId);
+    // Add mock data for the new group with other users
+    const mockData = createMockData(groupId, userId, otherUsers);
     
     set({ 
       currentGroup: group,
