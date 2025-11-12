@@ -4,6 +4,7 @@ import * as Clipboard from 'expo-clipboard';
 import { ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import QRCode from 'react-native-qrcode-svg';
 
 import { Header } from '@/components/Header';
 import { Badge } from '@/components/ui/badge';
@@ -85,6 +86,21 @@ export default function GroupMembersScreen() {
                 </View>
               </Button>
             </View>
+
+            <View style={styles.qrCodeSection}>
+              <Text style={styles.qrCodeLabel}>Kod QR do zeskanowania</Text>
+              <View style={styles.qrCodeWrapper}>
+                <QRCode
+                  value={currentGroup.code}
+                  size={180}
+                  color="#111827"
+                  backgroundColor="transparent"
+                />
+              </View>
+              <Text style={styles.qrCodeDescription}>
+                Zeskanuj kod QR, aby dołączyć do grupy
+              </Text>
+            </View>
           </CardContent>
         </Card>
 
@@ -136,7 +152,7 @@ export default function GroupMembersScreen() {
           })}
         </View>
 
-        <Card style={[styles.card, styles.inviteCard]}>
+        {/* <Card style={[styles.card, styles.inviteCard]}>
           <CardContent style={styles.cardContent}>
             <Text style={styles.inviteTitle}>Zaproś współlokatorów</Text>
             <Text style={styles.inviteDescription}>
@@ -145,7 +161,7 @@ export default function GroupMembersScreen() {
               swoim współlokatorom, aby mogli dołączyć.
             </Text>
           </CardContent>
-        </Card>
+        </Card> */}
       </ScrollView>
     </View>
   );

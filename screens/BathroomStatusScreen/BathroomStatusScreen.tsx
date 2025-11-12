@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -35,6 +35,7 @@ export default function BathroomStatusScreen() {
   const [showReserveForm, setShowReserveForm] = useState(false);
   const [startDateTime, setStartDateTime] = useState<Date | null>(null);
   const [duration, setDuration] = useState('30');
+  const [currentTime, setCurrentTime] = useState(new Date());
   const router = useRouter();
 
   const bathroomReservations = useAppStore((state) => state.bathroomReservations);
@@ -43,7 +44,28 @@ export default function BathroomStatusScreen() {
   const reserveBathroom = useAppStore((state) => state.reserveBathroom);
   const releaseBathroom = useAppStore((state) => state.releaseBathroom);
 
-  const now = useMemo(() => new Date(), []);
+  // Update current time every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Every minute
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Check and release expired reservations
+  useEffect(() => {
+    const now = currentTime;
+    bathroomReservations.forEach((reservation) => {
+      const endTime = new Date(reservation.endTime);
+      if (reservation.occupied && endTime < now) {
+        // Reservation has expired, release it
+        releaseBathroom(reservation.id);
+      }
+    });
+  }, [currentTime, bathroomReservations, releaseBathroom]);
+
+  const now = useMemo(() => currentTime, [currentTime]);
 
   const currentReservation = useMemo(
     () =>
@@ -150,7 +172,11 @@ export default function BathroomStatusScreen() {
                     })}
                   </Text>
                   {isMyReservation(currentReservation.userId) ? (
-                    <Button onPress={handleRelease} variant="secondary" style={styles.fullWidthButton}>
+                    <Button 
+                      onPress={handleRelease} 
+                      variant="secondary" 
+                      style={[styles.fullWidthButton, { width: '45%' }]}
+                    >
                       Zwolnij łazienkę
                     </Button>
                   ) : null}

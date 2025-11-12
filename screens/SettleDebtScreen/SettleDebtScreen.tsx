@@ -1,18 +1,16 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { Header } from '../components/Header';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
-import { useAppStore } from '../store/useAppStore';
+import { Header } from '@/components/Header';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { useAppStore } from '@/store/useAppStore';
+import { styles } from './SettleDebtScreen.style';
 
-interface SettleDebtScreenProps {
-  onNavigate: (screen: string) => void;
-  onBack?: () => void;
-}
-
-export function SettleDebtScreen({ onNavigate, onBack }: SettleDebtScreenProps) {
+export default function SettleDebtScreen() {
+  const router = useRouter();
   const expenses = useAppStore((state) => state.expenses);
   const currentGroup = useAppStore((state) => state.currentGroup);
   const user = useAppStore((state) => state.user);
@@ -24,11 +22,20 @@ export function SettleDebtScreen({ onNavigate, onBack }: SettleDebtScreenProps) 
   });
 
   expenses.forEach((expense) => {
-    const splitAmount = expense.amount / expense.splitBetween.length;
-    balances[expense.paidBy] = (balances[expense.paidBy] || 0) + expense.amount;
-    expense.splitBetween.forEach((memberId) => {
-      balances[memberId] = (balances[memberId] || 0) - splitAmount;
-    });
+    // Jeśli istnieje niestandardowy podział, użyj go
+    if (expense.splitAmounts && Object.keys(expense.splitAmounts).length > 0) {
+      balances[expense.paidBy] = (balances[expense.paidBy] || 0) + expense.amount;
+      Object.entries(expense.splitAmounts).forEach(([memberId, amount]) => {
+        balances[memberId] = (balances[memberId] || 0) - amount;
+      });
+    } else {
+      // Równy podział między wszystkich członków w splitBetween
+      const splitAmount = expense.amount / expense.splitBetween.length;
+      balances[expense.paidBy] = (balances[expense.paidBy] || 0) + expense.amount;
+      expense.splitBetween.forEach((memberId) => {
+        balances[memberId] = (balances[memberId] || 0) - splitAmount;
+      });
+    }
   });
 
   const settlements: Array<{ from: string; to: string; amount: number }> = [];
@@ -64,12 +71,12 @@ export function SettleDebtScreen({ onNavigate, onBack }: SettleDebtScreenProps) 
 
   const handleSettle = (from: string, to: string, amount: number) => {
     settleDebt(from, to, amount);
-    onNavigate('expenses');
+    router.back();
   };
 
   return (
     <View style={styles.container}>
-      <Header title="Rozlicz długi" showBack onBack={onBack || (() => onNavigate('expenses'))} />
+      <Header title="Rozlicz długi" showBack onBack={() => router.back()} />
 
       <ScrollView
         style={styles.scroll}
@@ -168,142 +175,3 @@ export function SettleDebtScreen({ onNavigate, onBack }: SettleDebtScreenProps) 
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  scroll: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-    paddingBottom: 40,
-  },
-  card: {
-    borderRadius: 16,
-    marginBottom: 16,
-  },
-  highlightCard: {
-    backgroundColor: '#eff6ff',
-    borderWidth: 1,
-    borderColor: '#bfdbfe',
-  },
-  cardContent: {
-    padding: 20,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 8,
-    color: '#1d4ed8',
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: '#1f2937',
-    lineHeight: 20,
-  },
-  section: {
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 12,
-  },
-  balanceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  balanceAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#e0f2fe',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  balanceAvatarText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1d4ed8',
-  },
-  balanceInfo: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  balanceName: {
-    fontSize: 16,
-    color: '#111827',
-  },
-  balanceValue: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  balancePositive: {
-    color: '#15803d',
-  },
-  balanceNegative: {
-    color: '#b91c1c',
-  },
-  transferRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  transferParticipants: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  transferAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  debtorAvatar: {
-    backgroundColor: '#fee2e2',
-    marginRight: 6,
-  },
-  creditorAvatar: {
-    backgroundColor: '#dcfce7',
-    marginLeft: 6,
-    marginRight: 6,
-  },
-  transferAvatarText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1f2937',
-  },
-  transferName: {
-    fontSize: 14,
-    color: '#1f2937',
-  },
-  transferArrow: {
-    marginHorizontal: 4,
-  },
-  transferAmount: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  centerContent: {
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#4b5563',
-    textAlign: 'center',
-  },
-  fullWidthButton: {
-    width: '100%',
-  },
-});

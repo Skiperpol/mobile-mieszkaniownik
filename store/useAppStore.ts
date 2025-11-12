@@ -25,6 +25,7 @@ export interface Expense {
   amount: number;
   paidBy: string;
   splitBetween: string[];
+  splitAmounts?: Record<string, number>; // Niestandardowy podział: userId -> kwota
   category: string;
   date: Date;
   description?: string;
@@ -60,6 +61,7 @@ export interface BoardPost {
   authorId: string;
   title: string;
   content: string;
+  imageUrl?: string;
   createdAt: Date;
   comments: Comment[];
 }
@@ -141,6 +143,7 @@ export interface AppState {
   
   // Actions - Board
   addBoardPost: (post: Omit<BoardPost, 'id' | 'createdAt' | 'comments'>) => void;
+  deleteBoardPost: (postId: string) => void;
   addComment: (postId: string, comment: Omit<Comment, 'id' | 'createdAt'>) => void;
   
   // Actions - Calendar
@@ -402,6 +405,12 @@ export const useAppStore = create<AppState>((set, get) => ({
       comments: [],
     };
     set({ boardPosts: [...get().boardPosts, newPost] });
+  },
+  
+  deleteBoardPost: (postId) => {
+    set({
+      boardPosts: get().boardPosts.filter(post => post.id !== postId),
+    });
   },
   
   addComment: (postId, comment) => {

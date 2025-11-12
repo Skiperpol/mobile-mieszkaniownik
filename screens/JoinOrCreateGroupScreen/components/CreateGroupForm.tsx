@@ -41,7 +41,9 @@ export function CreateGroupForm({
               value={groupName}
               onChangeText={onGroupNameChange}
               placeholder="np. Mieszkanie przy Parkowej 12"
-              autoCapitalize="words"
+              autoCapitalize="sentences"
+              autoCorrect={false}
+              keyboardType="default"
               style={styles.textInput}
             />
           </View>

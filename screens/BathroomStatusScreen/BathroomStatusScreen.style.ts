@@ -64,6 +64,7 @@ export const styles = StyleSheet.create({
   },
   fullWidthButton: {
     width: '100%',
+    textAlign: 'center',
   },
   formContent: {
     gap: 16,

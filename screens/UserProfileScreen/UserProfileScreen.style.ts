@@ -132,7 +132,7 @@ export const styles = StyleSheet.create({
     borderColor: '#fb923c',
   },
   leaveButtonText: {
-    color: '#c2410c',
+    color: '#F54900',
   },
   logoutButton: {
     borderColor: '#fca5a5',

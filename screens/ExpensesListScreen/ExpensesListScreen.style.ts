@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 120,
     gap: 16,
   },
-  iconButton: {
+  headerAction: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -58,9 +58,6 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#d1d5db',
     backgroundColor: '#ffffff',
-  },
-  actionIcon: {
-    marginRight: 6,
   },
   sectionHeader: {
     marginTop: 8,

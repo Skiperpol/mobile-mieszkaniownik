@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   Text,
   View,
@@ -60,11 +61,20 @@ export default function ExpensesListScreen() {
     });
 
     expenses.forEach((expense) => {
-      const split = expense.amount / expense.splitBetween.length;
-      map[expense.paidBy] = (map[expense.paidBy] || 0) + expense.amount;
-      expense.splitBetween.forEach((memberId) => {
-        map[memberId] = (map[memberId] || 0) - split;
-      });
+      // Jeśli istnieje niestandardowy podział, użyj go
+      if (expense.splitAmounts && Object.keys(expense.splitAmounts).length > 0) {
+        map[expense.paidBy] = (map[expense.paidBy] || 0) + expense.amount;
+        Object.entries(expense.splitAmounts).forEach(([memberId, amount]) => {
+          map[memberId] = (map[memberId] || 0) - amount;
+        });
+      } else {
+        // Równy podział między wszystkich członków w splitBetween
+        const split = expense.amount / expense.splitBetween.length;
+        map[expense.paidBy] = (map[expense.paidBy] || 0) + expense.amount;
+        expense.splitBetween.forEach((memberId) => {
+          map[memberId] = (map[memberId] || 0) - split;
+        });
+      }
     });
 
     return map;
@@ -102,9 +112,9 @@ export default function ExpensesListScreen() {
         showBack
         onBack={() => router.back()}
         rightAction={
-          <Button variant="ghost" style={styles.iconButton} onPress={() => router.push('/(group)/add-expense')}>
+          <Pressable onPress={() => router.push('/(group)/add-expense')} style={styles.headerAction} hitSlop={10}>
             <Ionicons name="add" size={22} color="#155DFC" />
-          </Button>
+          </Pressable>
         }
       />
 
@@ -153,10 +163,7 @@ export default function ExpensesListScreen() {
               style={styles.actionButton}
               onPress={() => router.push('/(group)/monthly-report')}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="stats-chart" size={16} color="#155DFC" style={styles.actionIcon} />
-                <Text>Raport</Text>
-              </View>
+              Raport
             </Button>
           </View>
 
@@ -174,7 +181,10 @@ export default function ExpensesListScreen() {
           ) : (
             sortedExpenses.map((expense) => {
               const categoryStyle = getCategoryStyle(expense.category);
-              const split = expense.amount / expense.splitBetween.length;
+              // Oblicz średnią kwotę na osobę
+              const averagePerPerson = expense.splitAmounts && Object.keys(expense.splitAmounts).length > 0
+                ? Object.values(expense.splitAmounts).reduce((sum, amt) => sum + amt, 0) / Object.keys(expense.splitAmounts).length
+                : expense.amount / expense.splitBetween.length;
               return (
                 <Card key={expense.id}>
                   <CardContent style={styles.expenseCard}>
@@ -197,7 +207,9 @@ export default function ExpensesListScreen() {
                         </Text>
                       </Text>
                       <Text style={styles.expenseMeta}>
-                        {split.toFixed(2)} zł / os
+                        {expense.splitAmounts && Object.keys(expense.splitAmounts).length > 0
+                          ? `${expense.splitBetween.length} osób (niestandardowy podział)`
+                          : `${averagePerPerson.toFixed(2)} zł / os`}
                       </Text>
                     </View>
 

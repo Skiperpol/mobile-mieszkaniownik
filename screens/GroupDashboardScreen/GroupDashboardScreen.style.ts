@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
     content: {
       paddingHorizontal: 16,
       paddingTop: 24,
-      paddingBottom: 100,
+      paddingBottom: 32,
     },
     welcome: {
       marginBottom: 20,
@@ -47,8 +47,18 @@ export const styles = StyleSheet.create({
     cardPressed: {
       transform: [{ scale: 0.98 }],
     },
+    card: {
+      flex: 1,
+      height: '100%',
+    },
     cardContent: {
       gap: 12,
+      flex: 1,
+      justifyContent: 'space-between',
+    },
+    iconWrapper: {
+      width: 48,
+      height: 48,
     },
     iconContainer: {
       width: 48,
@@ -62,8 +72,19 @@ export const styles = StyleSheet.create({
       fontWeight: '600',
       color: '#111827',
     },
+    subtitleWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
     cardSubtitle: {
       fontSize: 13,
       color: '#6b7280',
+    },
+    statusDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: '#16a34a',
     },
   });

@@ -83,6 +83,20 @@ export function Button({
     style,
   ];
 
+  const renderContent = () => {
+    if (loading) {
+      return <ActivityIndicator size="small" color={variantStyles.indicator} />;
+    }
+    
+    if (typeof children === 'string') {
+      return <Text style={[styles.textBase, sizeStyles.text, variantStyles.text, textStyle]}>{children}</Text>;
+    }
+    
+    // For complex children (like View with Text and Icons), render them as-is
+    // React Native will handle the layout correctly
+    return children;
+  };
+
   return (
     <Pressable
       onPress={onPress}
@@ -91,13 +105,7 @@ export function Button({
       accessibilityLabel={accessibilityLabel}
       style={pressableStyle}
     >
-      {loading ? (
-        <ActivityIndicator size="small" color={variantStyles.indicator} />
-      ) : typeof children === 'string' ? (
-        <Text style={[styles.textBase, sizeStyles.text, variantStyles.text, textStyle]}>{children}</Text>
-      ) : (
-        children
-      )}
+      {renderContent()}
     </Pressable>
   );
 }
@@ -156,6 +164,7 @@ const styles = StyleSheet.create({
   },
   textBase: {
     fontWeight: '600',
+    textAlign: 'center',
   },
   textMd: {
     fontSize: 16,

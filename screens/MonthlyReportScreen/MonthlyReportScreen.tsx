@@ -1,15 +1,12 @@
 import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { Header } from '../components/Header';
-import { Card, CardContent } from '../components/ui/card';
-import { useAppStore } from '../store/useAppStore';
-
-interface MonthlyReportScreenProps {
-  onNavigate: (screen: string) => void;
-  onBack?: () => void;
-}
+import { Header } from '@/components/Header';
+import { Card, CardContent } from '@/components/ui/card';
+import { useAppStore } from '@/store/useAppStore';
+import { styles } from './MonthlyReportScreen.style';
 
 const CATEGORY_META: Record<string, { label: string; color: string }> = {
   food: { label: 'Jedzenie', color: '#f97316' },
@@ -20,7 +17,8 @@ const CATEGORY_META: Record<string, { label: string; color: string }> = {
   other: { label: 'Inne', color: '#ec4899' },
 };
 
-export function MonthlyReportScreen({ onNavigate, onBack }: MonthlyReportScreenProps) {
+export default function MonthlyReportScreen() {
+  const router = useRouter();
   const expenses = useAppStore((state) => state.expenses);
   const currentGroup = useAppStore((state) => state.currentGroup);
 
@@ -86,7 +84,7 @@ export function MonthlyReportScreen({ onNavigate, onBack }: MonthlyReportScreenP
 
   return (
     <View style={styles.container}>
-      <Header title="Raport miesięczny" showBack onBack={onBack || (() => onNavigate('expenses'))} />
+      <Header title="Raport miesięczny" showBack onBack={() => router.back()} />
 
       <ScrollView
         style={styles.scroll}
@@ -179,132 +177,3 @@ export function MonthlyReportScreen({ onNavigate, onBack }: MonthlyReportScreenP
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  scroll: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-    paddingBottom: 40,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  summaryCard: {
-    flex: 1,
-    marginHorizontal: 4,
-  },
-  card: {
-    borderRadius: 16,
-    marginBottom: 16,
-  },
-  cardContent: {
-    padding: 20,
-  },
-  summaryHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  summaryIconWrapper: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  summaryLabel: {
-    fontSize: 13,
-    color: '#6b7280',
-    fontWeight: '500',
-  },
-  summaryValue: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  statRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  statValue: {
-    fontSize: 16,
-    color: '#111827',
-    fontWeight: '600',
-  },
-  section: {
-    marginTop: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 12,
-  },
-  centerContent: {
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#4b5563',
-    textAlign: 'center',
-  },
-  categoryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  categoryLabel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  categoryDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 10,
-  },
-  categoryName: {
-    fontSize: 16,
-    color: '#111827',
-    fontWeight: '600',
-  },
-  categoryValueWrapper: {
-    alignItems: 'flex-end',
-  },
-  categoryAmount: {
-    fontSize: 16,
-    color: '#111827',
-    fontWeight: '600',
-  },
-  categoryPercentage: {
-    fontSize: 12,
-    color: '#6b7280',
-  },
-  progressTrack: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#e5e7eb',
-    overflow: 'hidden',
-  },
-  progressBar: {
-    height: 6,
-    borderRadius: 3,
-  },
-});

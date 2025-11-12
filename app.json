@@ -9,7 +9,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.mobilemieszkaniownik"
+      "bundleIdentifier": "com.anonymous.mobilemieszkaniownik",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Aplikacja potrzebuje dostępu do galerii, aby dodać zdjęcia do ogłoszeń.",
+        "NSPhotoLibraryAddUsageDescription": "Aplikacja potrzebuje dostępu do galerii, aby zapisać zdjęcia."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -20,7 +24,9 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.anonymous.mobilemieszkaniownik",
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES"
       ]
     },
     "web": {
@@ -28,7 +34,13 @@
     },
     "plugins": [
       "expo-router",
-      "expo-camera"
+      "expo-camera",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Aplikacja potrzebuje dostępu do galerii, aby dodać zdjęcia do ogłoszeń."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

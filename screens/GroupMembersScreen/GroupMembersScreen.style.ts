@@ -83,6 +83,35 @@ export const styles = StyleSheet.create({
   copyButtonTextSuccess: {
     color: '#047857',
   },
+  qrCodeSection: {
+    marginTop: 20,
+    alignItems: 'center',
+    gap: 16,
+  },
+  qrCodeLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  qrCodeWrapper: {
+    padding: 16,
+    borderRadius: 20,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  qrCodeDescription: {
+    fontSize: 13,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
   section: {
     marginTop: 8,
   },

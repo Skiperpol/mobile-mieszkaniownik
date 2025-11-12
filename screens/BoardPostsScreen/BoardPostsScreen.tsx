@@ -5,6 +5,9 @@ import {
   ScrollView,
   Text,
   View,
+  Image,
+  Pressable,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -22,6 +25,7 @@ export default function BoardPostsScreen() {
   const boardPosts = useAppStore((state) => state.boardPosts);
   const user = useAppStore((state) => state.user);
   const addComment = useAppStore((state) => state.addComment);
+  const deleteBoardPost = useAppStore((state) => state.deleteBoardPost);
   const expenses = useAppStore((state) => state.expenses);
   const shoppingList = useAppStore((state) => state.shoppingList);
   const tasks = useAppStore((state) => state.tasks);
@@ -73,6 +77,24 @@ export default function BoardPostsScreen() {
       }
       return updated;
     });
+  };
+
+  const handleDeletePost = (postId: string) => {
+    Alert.alert(
+      'Usuń ogłoszenie',
+      'Czy na pewno chcesz usunąć to ogłoszenie?',
+      [
+        {
+          text: 'Anuluj',
+          style: 'cancel',
+        },
+        {
+          text: 'Usuń',
+          style: 'destructive',
+          onPress: () => deleteBoardPost(postId),
+        },
+      ]
+    );
   };
 
   const handleTabChange = (tab: string) => {
@@ -132,10 +154,25 @@ export default function BoardPostsScreen() {
                           {new Date(post.createdAt).toLocaleString('pl-PL')}
                         </Text>
                       </View>
+                      {post.authorId === user?.id ? (
+                        <Pressable
+                          onPress={() => handleDeletePost(post.id)}
+                          style={styles.deleteButton}
+                          hitSlop={8}
+                        >
+                          <Ionicons name="trash-outline" size={20} color="#dc2626" />
+                        </Pressable>
+                      ) : null}
                     </View>
 
                     <Text style={styles.postTitle}>{post.title}</Text>
                     <Text style={styles.postContent}>{post.content}</Text>
+
+                    {post.imageUrl ? (
+                      <View style={styles.imageContainer}>
+                        <Image source={{ uri: post.imageUrl }} style={styles.postImage} resizeMode="cover" />
+                      </View>
+                    ) : null}
 
                     <View style={styles.commentsSection}>
                       <Button

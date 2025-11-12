@@ -24,6 +24,7 @@ export const Input = forwardRef<TextInput, InputProps>(
           ref={ref}
           style={[styles.input, inputStyle]}
           placeholderTextColor="#9ca3af"
+          allowFontScaling={true}
           {...rest}
         />
         {Boolean(errorMessage) && <Text style={styles.errorText}>{errorMessage}</Text>}

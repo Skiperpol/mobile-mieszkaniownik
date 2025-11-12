@@ -66,6 +66,11 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6b7280',
   },
+  deleteButton: {
+    padding: 4,
+    borderRadius: 8,
+    backgroundColor: '#fee2e2',
+  },
   postTitle: {
     fontSize: 17,
     fontWeight: '700',
@@ -75,6 +80,17 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: '#374151',
     lineHeight: 20,
+  },
+  imageContainer: {
+    width: '100%',
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  postImage: {
+    width: '100%',
+    height: 250,
+    borderRadius: 16,
   },
   commentsSection: {
     borderTopWidth: StyleSheet.hairlineWidth,
