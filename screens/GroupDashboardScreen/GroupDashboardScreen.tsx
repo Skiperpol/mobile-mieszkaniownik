@@ -285,11 +285,6 @@ export default function GroupDashboardScreen() {
           ))}
         </View>
       </ScrollView>
-
-      {/* <BottomNav
-        activeTab="dashboard"
-        onTabChange={() => {}}
-      /> */}
     </View>
   );
 }

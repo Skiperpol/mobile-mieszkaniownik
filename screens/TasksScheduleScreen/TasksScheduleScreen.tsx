@@ -70,14 +70,7 @@ export default function TasksScheduleScreen() {
   };
 
   const isOverdue = (dueDate: Date) => new Date(dueDate) < new Date();
-
-  const handleTabChange = (tab: string) => {
-    if (tab === 'expenses') router.push('/(group)/expenses');
-    else if (tab === 'shopping') router.push('/(group)/shopping-list');
-    else if (tab === 'tasks') router.push('/(group)/tasks');
-    else if (tab === 'calendar') router.push('/(group)/calendar');
-    else if (tab === 'board') router.push('/(group)/board');
-  };
+  
 
   const renderFrequencyBadge = (frequency: string) => {
     const meta = frequencyMeta[frequency] ?? {
