@@ -103,7 +103,7 @@ export default function GroupDashboardScreen() {
         onPress: () => router.push('/(group)/members'),
       },
     ],
-    [activeShoppingItems, currentGroup?.members.length, router, pendingTasks, totalExpenses, upcomingEvents],
+    [activeShoppingItems, currentGroup?.members.length, router, pendingTasks, totalExpenses],
   );
 
   return (
@@ -117,9 +117,15 @@ export default function GroupDashboardScreen() {
         }
       />
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+        scrollEventThrottle={16}
+      >
         <View style={styles.welcome}>
-          <Text style={styles.greeting}>Witaj, {user?.name || 'przyjacielu'}!</Text>
+          <Text style={styles.greeting}>Witaj{user?.name ? `, ${user.name}` : ''}!</Text>
           <Text style={styles.subtitleText}>Co chcesz dzisiaj zrobić?</Text>
         </View>
 
@@ -144,7 +150,7 @@ export default function GroupDashboardScreen() {
 
       <BottomNav
         activeTab="dashboard"
-        onTabChange={() => router.push('/(group)/dashboard')}
+        onTabChange={() => {}}
         badges={{
           expenses: expenses.length,
           shopping: activeShoppingItems,

@@ -1,22 +1,19 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { BottomNav } from '../components/BottomNav';
-import { Header } from '../components/Header';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
-import { Checkbox } from '../components/ui/checkbox';
-import { useAppStore } from '../store/useAppStore';
+import { BottomNav } from '@/components/BottomNav';
+import { Header } from '@/components/Header';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useAppStore } from '@/store/useAppStore';
+import { styles } from './ShoppingListScreen.style';
 
-interface ShoppingListScreenProps {
-  onNavigate: (screen: string) => void;
-  onTabChange: (tab: string) => void;
-  onBack?: () => void;
-}
-
-export function ShoppingListScreen({ onNavigate, onTabChange, onBack }: ShoppingListScreenProps) {
+export default function ShoppingListScreen() {
+  const router = useRouter();
   const shoppingList = useAppStore((state) => state.shoppingList);
   const user = useAppStore((state) => state.user);
   const claimShoppingItem = useAppStore((state) => state.claimShoppingItem);
@@ -42,13 +39,21 @@ export function ShoppingListScreen({ onNavigate, onTabChange, onBack }: Shopping
     markAsPurchased(itemId);
   };
 
+  const handleTabChange = (tab: string) => {
+    if (tab === 'expenses') router.push('/(group)/expenses');
+    else if (tab === 'shopping') router.push('/(group)/shopping-list');
+    else if (tab === 'tasks') router.push('/(group)/tasks');
+    else if (tab === 'calendar') router.push('/(group)/calendar');
+    else if (tab === 'board') router.push('/(group)/board');
+  };
+
   const renderEmptyState = () => (
     <Card style={styles.card}>
       <CardContent style={[styles.cardContent, styles.centerContent]}>
         <Ionicons name="cart-outline" size={48} color="#9ca3af" style={styles.emptyIcon} />
         <Text style={styles.emptyTitle}>Lista zakupów jest pusta</Text>
         <Text style={styles.emptySubtitle}>Dodaj produkty, które trzeba kupić</Text>
-        <Button style={styles.fullWidthButton} onPress={() => onNavigate('add-shopping-item')}>
+        <Button style={styles.fullWidthButton} onPress={() => router.push('/(group)/add-shopping-item')}>
           Dodaj pierwszy produkt
         </Button>
       </CardContent>
@@ -60,16 +65,11 @@ export function ShoppingListScreen({ onNavigate, onTabChange, onBack }: Shopping
       <Header
         title="Lista zakupów"
         showBack
-        onBack={onBack || (() => onNavigate('dashboard'))}
+        onBack={() => router.back()}
         rightAction={
-          <View style={styles.headerAction}>
-            <Ionicons
-              name="add"
-              size={24}
-              color="#2563eb"
-              onPress={() => onNavigate('add-shopping-item')}
-            />
-          </View>
+          <Pressable onPress={() => router.push('/(group)/add-shopping-item')} style={styles.headerAction} hitSlop={10}>
+            <Ionicons name="add" size={24} color="#155DFC" />
+          </Pressable>
         }
       />
 
@@ -115,7 +115,7 @@ export function ShoppingListScreen({ onNavigate, onTabChange, onBack }: Shopping
                               textProps={{ style: styles.badgeText }}
                             >
                               <View style={styles.badgeContent}>
-                                <Ionicons name="person-outline" size={14} color="#1d4ed8" style={styles.badgeIcon} />
+                                <Ionicons name="person-outline" size={14} color="#155DFC" style={styles.badgeIcon} />
                                 <Text style={[styles.badgeText, styles.badgeTextStrong]}>
                                   {item.claimedBy === user?.id ? 'Ty kupisz' : 'Ktoś kupuje'}
                                 </Text>
@@ -166,7 +166,7 @@ export function ShoppingListScreen({ onNavigate, onTabChange, onBack }: Shopping
 
       <BottomNav
         activeTab="shopping"
-        onTabChange={onTabChange}
+        onTabChange={handleTabChange}
         badges={{
           expenses: expenses.length,
           shopping: activeShoppingItems,
@@ -179,127 +179,3 @@ export function ShoppingListScreen({ onNavigate, onTabChange, onBack }: Shopping
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  scroll: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-    paddingBottom: 100,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionHeader: {
-    marginBottom: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  card: {
-    borderRadius: 16,
-    marginBottom: 16,
-  },
-  purchasedCard: {
-    opacity: 0.7,
-  },
-  cardContent: {
-    padding: 16,
-  },
-  centerContent: {
-    alignItems: 'center',
-  },
-  itemRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  itemBody: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  itemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  itemSubtitle: {
-    fontSize: 13,
-    color: '#6b7280',
-    marginTop: 4,
-  },
-  itemPrice: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#0f172a',
-  },
-  itemFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  claimButton: {
-    paddingHorizontal: 20,
-  },
-  badge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  badgeContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  badgeIcon: {
-    marginRight: 6,
-  },
-  badgeText: {
-    fontSize: 12,
-    color: '#1d4ed8',
-  },
-  badgeTextStrong: {
-    fontWeight: '600',
-  },
-  purchasedText: {
-    textDecorationLine: 'line-through',
-    color: '#6b7280',
-  },
-  emptyIcon: {
-    marginBottom: 16,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  fullWidthButton: {
-    width: '100%',
-  },
-  headerAction: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#e0f2fe',
-  },
-});

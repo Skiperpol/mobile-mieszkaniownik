@@ -1,19 +1,15 @@
 import React, { useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { BottomNav } from '../components/BottomNav';
-import { Header } from '../components/Header';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
-import { useAppStore } from '../store/useAppStore';
-
-interface CalendarScreenProps {
-  onNavigate: (screen: string) => void;
-  onTabChange: (tab: string) => void;
-  onBack?: () => void;
-}
+import { BottomNav } from '@/components/BottomNav';
+import { Header } from '@/components/Header';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { useAppStore } from '@/store/useAppStore';
+import { styles } from './CalendarScreen.style';
 
 const eventTypeMeta: Record<
   string,
@@ -31,11 +27,12 @@ const eventTypeMeta: Record<
   event: {
     label: 'Wydarzenie',
     backgroundColor: '#dbeafe',
-    textColor: '#1d4ed8',
+    textColor: '#155DFC',
   },
 };
 
-export function CalendarScreen({ onNavigate, onTabChange, onBack }: CalendarScreenProps) {
+export default function CalendarScreen() {
+  const router = useRouter();
   const calendarEvents = useAppStore((state) => state.calendarEvents);
   const user = useAppStore((state) => state.user);
   const expenses = useAppStore((state) => state.expenses);
@@ -131,15 +128,23 @@ export function CalendarScreen({ onNavigate, onTabChange, onBack }: CalendarScre
     </View>
   );
 
+  const handleTabChange = (tab: string) => {
+    if (tab === 'expenses') router.push('/(group)/expenses');
+    else if (tab === 'shopping') router.push('/(group)/shopping-list');
+    else if (tab === 'tasks') router.push('/(group)/tasks');
+    else if (tab === 'calendar') router.push('/(group)/calendar');
+    else if (tab === 'board') router.push('/(group)/board');
+  };
+
   return (
     <View style={styles.container}>
       <Header
         title="Kalendarz"
         showBack
-        onBack={onBack || (() => onNavigate('dashboard'))}
+        onBack={() => router.back()}
         rightAction={
-          <Pressable onPress={() => onNavigate('add-absence')} style={styles.headerAction} hitSlop={10}>
-            <Ionicons name="add" size={22} color="#2563eb" />
+          <Pressable onPress={() => router.push('/(group)/add-absence')} style={styles.headerAction} hitSlop={10}>
+            <Ionicons name="add" size={22} color="#155DFC" />
           </Pressable>
         }
       />
@@ -156,7 +161,7 @@ export function CalendarScreen({ onNavigate, onTabChange, onBack }: CalendarScre
             <CardContent style={[styles.cardContent, styles.centerContent]}>
               <Ionicons name="calendar-outline" size={48} color="#9ca3af" style={styles.emptyIcon} />
               <Text style={styles.emptyText}>Brak nadchodzących wydarzeń</Text>
-              <Button style={styles.fullWidthButton} onPress={() => onNavigate('add-absence')}>
+              <Button style={styles.fullWidthButton} onPress={() => router.push('/(group)/add-absence')}>
                 Dodaj nieobecność
               </Button>
             </CardContent>
@@ -170,7 +175,7 @@ export function CalendarScreen({ onNavigate, onTabChange, onBack }: CalendarScre
 
       <BottomNav
         activeTab="calendar"
-        onTabChange={onTabChange}
+        onTabChange={handleTabChange}
         badges={{
           expenses: expenses.length,
           shopping: activeShoppingItems,
@@ -183,100 +188,3 @@ export function CalendarScreen({ onNavigate, onTabChange, onBack }: CalendarScre
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  scroll: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-    paddingBottom: 100,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 12,
-  },
-  card: {
-    borderRadius: 16,
-    marginBottom: 16,
-  },
-  cardContent: {
-    padding: 20,
-  },
-  eventTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  eventDescription: {
-    fontSize: 14,
-    color: '#4b5563',
-    marginBottom: 12,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 12,
-  },
-  badge: {
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  badgeContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  badgeIcon: {
-    marginRight: 4,
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#4338ca',
-  },
-  dateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  dateIcon: {
-    marginRight: 8,
-  },
-  dateText: {
-    fontSize: 14,
-    color: '#1f2937',
-  },
-  centerContent: {
-    alignItems: 'center',
-  },
-  emptyIcon: {
-    marginBottom: 16,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#4b5563',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  fullWidthButton: {
-    width: '100%',
-  },
-  headerAction: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#e0f2fe',
-  },
-});

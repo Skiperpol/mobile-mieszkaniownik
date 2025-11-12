@@ -13,13 +13,16 @@ export const styles = StyleSheet.create({
       justifyContent: 'center',
       backgroundColor: '#f3f4f6',
     },
+    scroll: {
+      flex: 1,
+    },
     content: {
-      paddingHorizontal: 20,
+      paddingHorizontal: 16,
       paddingTop: 24,
-      paddingBottom: 92,
-      gap: 20,
+      paddingBottom: 100,
     },
     welcome: {
+      marginBottom: 20,
       gap: 4,
     },
     greeting: {
@@ -34,11 +37,12 @@ export const styles = StyleSheet.create({
     grid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 16,
-      justifyContent: 'space-between',
+      marginHorizontal: -6,
     },
     cardWrapper: {
-      width: '48%',
+      width: '50%',
+      paddingHorizontal: 6,
+      paddingVertical: 6,
     },
     cardPressed: {
       transform: [{ scale: 0.98 }],

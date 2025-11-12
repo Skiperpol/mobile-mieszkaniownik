@@ -3,19 +3,19 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { useAppStore } from '../store/useAppStore';
-import { Header } from '../components/Header';
-import { BottomNav } from '../components/BottomNav';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
-import { getUserName } from '../utils/userNames';
-import { useNavigation } from 'expo-router';
+import { useAppStore } from '@/store/useAppStore';
+import { Header } from '@/components/Header';
+import { BottomNav } from '@/components/BottomNav';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { getUserName } from '@/utils/userNames';
+import { styles } from './ExpensesListScreen.style';
 
 const CATEGORY_STYLES: Record<
   string,
@@ -25,14 +25,15 @@ const CATEGORY_STYLES: Record<
   }
 > = {
   food: { backgroundColor: '#ffedd5', color: '#c2410c' },
-  shopping: { backgroundColor: '#dbeafe', color: '#1d4ed8' },
+  shopping: { backgroundColor: '#dbeafe', color: '#155DFC' },
   utilities: { backgroundColor: '#dcfce7', color: '#047857' },
   entertainment: { backgroundColor: '#ede9fe', color: '#6d28d9' },
   settlement: { backgroundColor: '#f3f4f6', color: '#374151' },
   other: { backgroundColor: '#fce7f3', color: '#be185d' },
 };
 
-export function ExpensesListScreen() {
+export default function ExpensesListScreen() {
+  const router = useRouter();
   const expenses = useAppStore((state) => state.expenses);
   const currentGroup = useAppStore((state) => state.currentGroup);
   const user = useAppStore((state) => state.user);
@@ -40,7 +41,7 @@ export function ExpensesListScreen() {
   const tasks = useAppStore((state) => state.tasks);
   const boardPosts = useAppStore((state) => state.boardPosts);
   const calendarEvents = useAppStore((state) => state.calendarEvents);
-  const navigation = useNavigation();
+  
   const badges = useMemo(
     () => ({
       expenses: expenses.length,
@@ -86,15 +87,23 @@ export function ExpensesListScreen() {
 
   const getCategoryStyle = (category: string) => CATEGORY_STYLES[category] || CATEGORY_STYLES.other;
 
+  const handleTabChange = (tab: string) => {
+    if (tab === 'expenses') router.push('/(group)/expenses');
+    else if (tab === 'shopping') router.push('/(group)/shopping-list');
+    else if (tab === 'tasks') router.push('/(group)/tasks');
+    else if (tab === 'calendar') router.push('/(group)/calendar');
+    else if (tab === 'board') router.push('/(group)/board');
+  };
+
   return (
     <View style={styles.root}>
       <Header
         title="Skarbonka"
         showBack
-        onBack={() => navigation.navigate('Dashboard')}
+        onBack={() => router.back()}
         rightAction={
-          <Button variant="ghost" style={styles.iconButton} onPress={() => navigation.navigate('AddExpense')}>
-            <Ionicons name="add" size={22} color="#2563eb" />
+          <Button variant="ghost" style={styles.iconButton} onPress={() => router.push('/(group)/add-expense')}>
+            <Ionicons name="add" size={22} color="#155DFC" />
           </Button>
         }
       />
@@ -135,17 +144,19 @@ export function ExpensesListScreen() {
             <Button
               variant="ghost"
               style={styles.actionButton}
-              onPress={() => navigation.navigate('SettleDebt')}
+              onPress={() => router.push('/(group)/settle-debt')}
             >
               Rozlicz długi
             </Button>
             <Button
               variant="ghost"
               style={styles.actionButton}
-              onPress={() => navigation.navigate('MonthlyReport')}
+              onPress={() => router.push('/(group)/monthly-report')}
             >
-              <Ionicons name="stats-chart" size={16} color="#2563eb" style={styles.actionIcon} />
-              Raport
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="stats-chart" size={16} color="#155DFC" style={styles.actionIcon} />
+                <Text>Raport</Text>
+              </View>
             </Button>
           </View>
 
@@ -157,7 +168,7 @@ export function ExpensesListScreen() {
             <Card>
               <CardContent style={styles.emptyCard}>
                 <Text style={styles.emptyText}>Brak wydatków</Text>
-                <Button onPress={() => navigation.navigate('AddExpense')}>Dodaj pierwszy wydatek</Button>
+                <Button onPress={() => router.push('/(group)/add-expense')}>Dodaj pierwszy wydatek</Button>
               </CardContent>
             </Card>
           ) : (
@@ -205,139 +216,8 @@ export function ExpensesListScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <BottomNav activeTab="expenses" onTabChange={() => navigation.navigate('Expenses')} badges={badges} />
+      <BottomNav activeTab="expenses" onTabChange={handleTabChange} badges={badges} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 120,
-    gap: 16,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  summaryGrid: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  summaryCard: {
-    gap: 8,
-  },
-  summaryLabel: {
-    fontSize: 13,
-    color: '#6b7280',
-  },
-  summaryValue: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  balancePositive: {
-    backgroundColor: '#dcfce7',
-  },
-  balanceNegative: {
-    backgroundColor: '#fee2e2',
-  },
-  positiveText: {
-    color: '#047857',
-  },
-  negativeText: {
-    color: '#b91c1c',
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    backgroundColor: '#ffffff',
-  },
-  actionIcon: {
-    marginRight: 6,
-  },
-  sectionHeader: {
-    marginTop: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  emptyCard: {
-    alignItems: 'center',
-    gap: 16,
-    paddingVertical: 32,
-  },
-  emptyText: {
-    fontSize: 15,
-    color: '#6b7280',
-  },
-  expenseCard: {
-    gap: 10,
-  },
-  categoryPill: {
-    alignSelf: 'flex-start',
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-  },
-  categoryText: {
-    fontSize: 12,
-    fontWeight: '600',
-    textTransform: 'capitalize',
-  },
-  expenseHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  expenseTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  expenseAmount: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  expenseMetaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  expenseMeta: {
-    fontSize: 13,
-    color: '#6b7280',
-  },
-  expenseMetaHighlight: {
-    fontWeight: '600',
-    color: '#111827',
-  },
-  expenseDate: {
-    fontSize: 12,
-    color: '#9ca3af',
-  },
-  expenseDescription: {
-    fontSize: 13,
-    color: '#374151',
-    lineHeight: 18,
-  },
-});

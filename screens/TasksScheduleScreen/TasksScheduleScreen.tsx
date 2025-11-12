@@ -1,21 +1,16 @@
 import React, { useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { BottomNav } from '../components/BottomNav';
-import { Header } from '../components/Header';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
-import { Checkbox } from '../components/ui/checkbox';
-import { useAppStore } from '../store/useAppStore';
-import { getUserName } from '../utils/userNames';
-
-interface TasksScheduleScreenProps {
-  onNavigate: (screen: string) => void;
-  onTabChange: (tab: string) => void;
-  onBack?: () => void;
-}
+import { BottomNav } from '@/components/BottomNav';
+import { Header } from '@/components/Header';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { useAppStore } from '@/store/useAppStore';
+import { getUserName } from '@/utils/userNames';
+import { styles } from './TasksScheduleScreen.style';
 
 const frequencyMeta: Record<
   string,
@@ -33,7 +28,7 @@ const frequencyMeta: Record<
   weekly: {
     label: 'Co tydzień',
     backgroundColor: '#dbeafe',
-    textColor: '#1d4ed8',
+    textColor: '#155DFC',
   },
   monthly: {
     label: 'Co miesiąc',
@@ -42,7 +37,8 @@ const frequencyMeta: Record<
   },
 };
 
-export function TasksScheduleScreen({ onNavigate, onTabChange, onBack }: TasksScheduleScreenProps) {
+export default function TasksScheduleScreen() {
+  const router = useRouter();
   const tasks = useAppStore((state) => state.tasks);
   const user = useAppStore((state) => state.user);
   const completeTask = useAppStore((state) => state.completeTask);
@@ -70,6 +66,14 @@ export function TasksScheduleScreen({ onNavigate, onTabChange, onBack }: TasksSc
 
   const isOverdue = (dueDate: Date) => new Date(dueDate) < new Date();
 
+  const handleTabChange = (tab: string) => {
+    if (tab === 'expenses') router.push('/(group)/expenses');
+    else if (tab === 'shopping') router.push('/(group)/shopping-list');
+    else if (tab === 'tasks') router.push('/(group)/tasks');
+    else if (tab === 'calendar') router.push('/(group)/calendar');
+    else if (tab === 'board') router.push('/(group)/board');
+  };
+
   const renderFrequencyBadge = (frequency: string) => {
     const meta = frequencyMeta[frequency] ?? {
       label: frequency,
@@ -93,10 +97,10 @@ export function TasksScheduleScreen({ onNavigate, onTabChange, onBack }: TasksSc
       <Header
         title="Harmonogram sprzątania"
         showBack
-        onBack={onBack || (() => onNavigate('dashboard'))}
+        onBack={() => router.back()}
         rightAction={
-          <Pressable onPress={() => onNavigate('add-task')} style={styles.headerAction} hitSlop={10}>
-            <Ionicons name="add" size={22} color="#2563eb" />
+          <Pressable onPress={() => router.push('/(group)/add-task')} style={styles.headerAction} hitSlop={10}>
+            <Ionicons name="add" size={22} color="#155DFC" />
           </Pressable>
         }
       />
@@ -219,7 +223,7 @@ export function TasksScheduleScreen({ onNavigate, onTabChange, onBack }: TasksSc
             <CardContent style={[styles.cardContent, styles.centerContent]}>
               <Ionicons name="sparkles-outline" size={48} color="#6366f1" style={styles.emptyIcon} />
               <Text style={styles.emptyText}>Brak zadań w harmonogramie</Text>
-              <Button style={styles.fullWidthButton} onPress={() => onNavigate('add-task')}>
+              <Button style={styles.fullWidthButton} onPress={() => router.push('/(group)/add-task')}>
                 Dodaj pierwsze zadanie
               </Button>
             </CardContent>
@@ -229,7 +233,7 @@ export function TasksScheduleScreen({ onNavigate, onTabChange, onBack }: TasksSc
 
       <BottomNav
         activeTab="tasks"
-        onTabChange={onTabChange}
+        onTabChange={handleTabChange}
         badges={{
           expenses: expenses.length,
           shopping: activeShoppingItems,
@@ -242,119 +246,3 @@ export function TasksScheduleScreen({ onNavigate, onTabChange, onBack }: TasksSc
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  scroll: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-    paddingBottom: 100,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 12,
-  },
-  card: {
-    borderRadius: 16,
-    marginBottom: 16,
-  },
-  cardOverdue: {
-    backgroundColor: '#fee2e2',
-    borderWidth: 1,
-    borderColor: '#fecaca',
-  },
-  cardContent: {
-    padding: 20,
-  },
-  centerContent: {
-    alignItems: 'center',
-  },
-  taskHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  taskTitleWrapper: {
-    flex: 1,
-  },
-  taskTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  taskDescription: {
-    fontSize: 14,
-    color: '#4b5563',
-  },
-  taskMeta: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 16,
-    alignItems: 'center',
-  },
-  badge: {
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  badgeContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  badgeIcon: {
-    marginRight: 4,
-  },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#4338ca',
-  },
-  fullWidthButton: {
-    width: '100%',
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonIcon: {
-    marginRight: 8,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  buttonTextPrimary: {
-    color: '#ffffff',
-  },
-  buttonTextOutline: {
-    color: '#4338ca',
-  },
-  emptyIcon: {
-    marginBottom: 16,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#4b5563',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  headerAction: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#e0f2fe',
-  },
-});

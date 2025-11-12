@@ -3,25 +3,21 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { Header } from '../components/Header';
-import { useAppStore } from '../store/useAppStore';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { DatePickerField } from '../components/ui/date-picker';
-import { TimePickerField } from '../components/ui/time-picker';
-
-interface BathroomStatusScreenProps {
-  onNavigate: (screen: string) => void;
-  onBack?: () => void;
-}
+import { Header } from '@/components/Header';
+import { useAppStore } from '@/store/useAppStore';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { DatePickerField } from '@/components/ui/date-picker';
+import { TimePickerField } from '@/components/ui/time-picker';
+import { styles } from './BathroomStatusScreen.style';
 
 function createDateWithNewDatePart(source: Date | null, datePart: Date) {
   const base = source ? new Date(source) : new Date();
@@ -35,10 +31,11 @@ function createDateWithNewTimePart(source: Date | null, timePart: Date) {
   return base;
 }
 
-export function BathroomStatusScreen({ onNavigate, onBack }: BathroomStatusScreenProps) {
+export default function BathroomStatusScreen() {
   const [showReserveForm, setShowReserveForm] = useState(false);
   const [startDateTime, setStartDateTime] = useState<Date | null>(null);
   const [duration, setDuration] = useState('30');
+  const router = useRouter();
 
   const bathroomReservations = useAppStore((state) => state.bathroomReservations);
   const user = useAppStore((state) => state.user);
@@ -117,7 +114,7 @@ export function BathroomStatusScreen({ onNavigate, onBack }: BathroomStatusScree
       <Header
         title="Status łazienki"
         showBack
-        onBack={onBack || (() => onNavigate('dashboard'))}
+        onBack={() => router.back()}
       />
 
       <KeyboardAvoidingView
@@ -227,7 +224,7 @@ export function BathroomStatusScreen({ onNavigate, onBack }: BathroomStatusScree
                   <Card key={reservation.id}>
                     <CardContent style={styles.upcomingCard}>
                       <View style={styles.avatar}>
-                        <Ionicons name="person" size={20} color="#1d4ed8" />
+                        <Ionicons name="person" size={20} color="#155DFC" />
                       </View>
                       <View style={styles.upcomingInfo}>
                         <Text style={styles.upcomingUser}>
@@ -250,127 +247,3 @@ export function BathroomStatusScreen({ onNavigate, onBack }: BathroomStatusScree
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 32,
-    gap: 20,
-  },
-  statusCard: {
-    borderRadius: 24,
-  },
-  statusContent: {
-    alignItems: 'center',
-    gap: 12,
-    paddingVertical: 28,
-  },
-  statusBusy: {
-    backgroundColor: '#fee2e2',
-    borderWidth: 1,
-    borderColor: '#fecaca',
-  },
-  statusFree: {
-    backgroundColor: '#dcfce7',
-    borderWidth: 1,
-    borderColor: '#bbf7d0',
-  },
-  iconWrapper: {
-    width: 80,
-    height: 80,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 8,
-  },
-  statusTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  statusSubtitle: {
-    fontSize: 14,
-    color: '#4b5563',
-  },
-  statusDetails: {
-    alignItems: 'center',
-    gap: 6,
-  },
-  statusText: {
-    fontSize: 14,
-    color: '#1f2937',
-  },
-  fullWidthButton: {
-    width: '100%',
-  },
-  formContent: {
-    gap: 16,
-  },
-  formTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  field: {
-    gap: 8,
-  },
-  formActions: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  halfButton: {
-    flex: 1,
-  },
-  upcomingSection: {
-    gap: 12,
-  },
-  upcomingTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  upcomingCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    paddingVertical: 16,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#dbeafe',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  upcomingInfo: {
-    flex: 1,
-    gap: 4,
-  },
-  upcomingUser: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  upcomingTimeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  upcomingTime: {
-    fontSize: 13,
-    color: '#4b5563',
-  },
-});

@@ -3,26 +3,22 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { useAppStore } from '../store/useAppStore';
-import { Header } from '../components/Header';
-import { BottomNav } from '../components/BottomNav';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
-import { Input } from '../components/ui/input';
+import { useAppStore } from '@/store/useAppStore';
+import { Header } from '@/components/Header';
+import { BottomNav } from '@/components/BottomNav';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { styles } from './BoardPostsScreen.style';
 
-interface BoardPostsScreenProps {
-  onNavigate: (screen: string) => void;
-  onTabChange: (tab: string) => void;
-  onBack?: () => void;
-}
-
-export function BoardPostsScreen({ onNavigate, onTabChange, onBack }: BoardPostsScreenProps) {
+export default function BoardPostsScreen() {
+  const router = useRouter();
   const boardPosts = useAppStore((state) => state.boardPosts);
   const user = useAppStore((state) => state.user);
   const addComment = useAppStore((state) => state.addComment);
@@ -79,15 +75,23 @@ export function BoardPostsScreen({ onNavigate, onTabChange, onBack }: BoardPosts
     });
   };
 
+  const handleTabChange = (tab: string) => {
+    if (tab === 'expenses') router.push('/(group)/expenses');
+    else if (tab === 'shopping') router.push('/(group)/shopping-list');
+    else if (tab === 'tasks') router.push('/(group)/tasks');
+    else if (tab === 'calendar') router.push('/(group)/calendar');
+    else if (tab === 'board') router.push('/(group)/board');
+  };
+
   return (
     <View style={styles.root}>
       <Header
         title="Tablica ogłoszeń"
         showBack
-        onBack={onBack || (() => onNavigate('dashboard'))}
+        onBack={() => router.back()}
         rightAction={
-          <Button variant="ghost" style={styles.iconButton} onPress={() => onNavigate('add-board-post')}>
-            <Ionicons name="add" size={22} color="#2563eb" />
+          <Button variant="ghost" style={styles.iconButton} onPress={() => router.push('/(group)/add-board-post')}>
+            <Ionicons name="add" size={22} color="#155DFC" />
           </Button>
         }
       />
@@ -107,7 +111,7 @@ export function BoardPostsScreen({ onNavigate, onTabChange, onBack }: BoardPosts
               <CardContent style={styles.emptyCard}>
                 <Ionicons name="chatbubbles-outline" size={48} color="#9ca3af" />
                 <Text style={styles.emptyText}>Brak ogłoszeń</Text>
-                <Button onPress={() => onNavigate('add-board-post')}>Dodaj pierwsze ogłoszenie</Button>
+                <Button onPress={() => router.push('/(group)/add-board-post')}>Dodaj pierwsze ogłoszenie</Button>
               </CardContent>
             </Card>
           ) : (
@@ -140,7 +144,7 @@ export function BoardPostsScreen({ onNavigate, onTabChange, onBack }: BoardPosts
                         onPress={() => toggleComments(post.id)}
                       >
                         <View style={styles.commentToggleContent}>
-                          <Ionicons name="chatbox-ellipses-outline" size={16} color="#2563eb" />
+                          <Ionicons name="chatbox-ellipses-outline" size={16} color="#155DFC" />
                           <Text style={styles.commentToggleText}>
                             {post.comments.length} komentarzy
                           </Text>
@@ -202,159 +206,8 @@ export function BoardPostsScreen({ onNavigate, onTabChange, onBack }: BoardPosts
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <BottomNav activeTab="board" onTabChange={onTabChange} badges={badges} />
+      <BottomNav activeTab="board" onTabChange={handleTabChange} badges={badges} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 120,
-    gap: 16,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyCard: {
-    alignItems: 'center',
-    gap: 16,
-    paddingVertical: 32,
-  },
-  emptyText: {
-    fontSize: 15,
-    color: '#6b7280',
-  },
-  postCard: {
-    gap: 12,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#dbeafe',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1d4ed8',
-  },
-  headerText: {
-    flex: 1,
-    gap: 2,
-  },
-  author: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  timestamp: {
-    fontSize: 12,
-    color: '#6b7280',
-  },
-  postTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  postContent: {
-    fontSize: 14,
-    color: '#374151',
-    lineHeight: 20,
-  },
-  commentsSection: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#e5e7eb',
-    paddingTop: 12,
-    gap: 12,
-  },
-  commentToggle: {
-    alignSelf: 'flex-start',
-  },
-  commentToggleContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  commentToggleText: {
-    fontSize: 13,
-    color: '#2563eb',
-    fontWeight: '600',
-  },
-  commentsList: {
-    gap: 12,
-  },
-  commentCard: {
-    backgroundColor: '#f3f4f6',
-    borderRadius: 16,
-    padding: 12,
-    gap: 6,
-  },
-  commentHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  smallAvatar: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: '#dbeafe',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  smallAvatarText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#1d4ed8',
-  },
-  commentAuthor: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  commentTimestamp: {
-    fontSize: 11,
-    color: '#6b7280',
-  },
-  commentContent: {
-    fontSize: 13,
-    color: '#374151',
-  },
-  commentInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  commentInput: {
-    flex: 1,
-  },
-  sendButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

@@ -20,6 +20,35 @@ export const getUserAvatar = (userId: string): string => {
   return userAvatars[userId] || '👤';
 };
 
+// Helper function to generate gradient colors based on user ID or name
+const generateGradientColors = (identifier: string): readonly [string, string] => {
+  // Hash function to generate consistent colors based on string
+  let hash = 0;
+  for (let i = 0; i < identifier.length; i++) {
+    hash = identifier.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  // Predefined gradient color palettes
+  const gradients: readonly [string, string][] = [
+    ['#a855f7', '#ec4899'], // Purple to Pink
+    ['#38bdf8', '#6366f1'], // Sky to Indigo
+    ['#fb923c', '#ef4444'], // Orange to Red
+    ['#10b981', '#059669'], // Green
+    ['#f59e0b', '#d97706'], // Amber
+    ['#8b5cf6', '#7c3aed'], // Violet
+    ['#ec4899', '#be185d'], // Pink to Rose
+    ['#06b6d4', '#0891b2'], // Cyan
+    ['#14b8a6', '#0d9488'], // Teal
+    ['#f97316', '#ea580c'], // Orange
+    ['#6366f1', '#4f46e5'], // Indigo
+    ['#84cc16', '#65a30d'], // Lime
+  ];
+  
+  // Use hash to select a gradient
+  const index = Math.abs(hash) % gradients.length;
+  return gradients[index];
+};
+
 // Helper function to get user gradient colors
 export const getUserColor = (userId: string): readonly [string, string] => {
   const userColors: Record<string, readonly [string, string]> = {
@@ -28,5 +57,6 @@ export const getUserColor = (userId: string): readonly [string, string] => {
     'user-3': ['#fb923c', '#ef4444'],
   };
 
-  return userColors[userId] || ['#9ca3af', '#6b7280'];
+  // Return predefined color if exists, otherwise generate based on userId
+  return userColors[userId] || generateGradientColors(userId);
 };

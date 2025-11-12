@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-
+import { createMockData } from './mockData';
 
 // Types
 export interface User {
@@ -170,428 +170,40 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Auth actions
   login: async (email: string, password: string) => {
     // Mock login - replace with real Firebase/Supabase auth
+    const userId = 'user-1';
     const mockUser: User = {
-      id: 'user-1',
+      id: userId,
       email,
       name: 'Anna Kowalska',
       avatar: '👩',
     };
     
     // Mock group with sample data
+    const groupId = 'group-1';
+    const otherUsers = ['user-2', 'user-3'];
     const mockGroup: Group = {
-      id: 'group-1',
+      id: groupId,
       name: 'Mieszkanie przy Parkowej 12',
       code: 'PARK12',
-      createdBy: 'user-1',
-      members: ['user-1', 'user-2', 'user-3'],
+      createdBy: userId,
+      members: [userId, ...otherUsers],
       createdAt: new Date('2024-01-01'),
     };
     
-    // Mock expenses
-    const mockExpenses: Expense[] = [
-      // Bieżący miesiąc (Listopad 2024)
-      {
-        id: 'exp-1',
-        groupId: 'group-1',
-        title: 'Zakupy spożywcze - Biedronka',
-        amount: 234.50,
-        paidBy: 'user-1',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'food',
-        date: new Date('2024-11-05'),
-        description: 'Zakupy na cały tydzień',
-      },
-      {
-        id: 'exp-2',
-        groupId: 'group-1',
-        title: 'Rachunki za prąd',
-        amount: 180.00,
-        paidBy: 'user-2',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'utilities',
-        date: new Date('2024-11-01'),
-      },
-      {
-        id: 'exp-6',
-        groupId: 'group-1',
-        title: 'Internetowy + TV',
-        amount: 99.00,
-        paidBy: 'user-1',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'utilities',
-        date: new Date('2024-11-01'),
-        description: 'Abonament Orange',
-      },
-      {
-        id: 'exp-7',
-        groupId: 'group-1',
-        title: 'Gaz',
-        amount: 145.30,
-        paidBy: 'user-3',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'utilities',
-        date: new Date('2024-11-02'),
-      },
-      {
-        id: 'exp-8',
-        groupId: 'group-1',
-        title: 'Woda i ścieki',
-        amount: 87.50,
-        paidBy: 'user-2',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'utilities',
-        date: new Date('2024-11-03'),
-      },
-      {
-        id: 'exp-9',
-        groupId: 'group-1',
-        title: 'Zakupy spożywcze - Lidl',
-        amount: 156.80,
-        paidBy: 'user-2',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'food',
-        date: new Date('2024-11-03'),
-      },
-      {
-        id: 'exp-10',
-        groupId: 'group-1',
-        title: 'Kino - Dune 2',
-        amount: 75.00,
-        paidBy: 'user-1',
-        splitBetween: ['user-1', 'user-2'],
-        category: 'entertainment',
-        date: new Date('2024-11-04'),
-      },
-      {
-        id: 'exp-11',
-        groupId: 'group-1',
-        title: 'Spotify Premium Family',
-        amount: 29.99,
-        paidBy: 'user-3',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'entertainment',
-        date: new Date('2024-11-01'),
-      },
-      {
-        id: 'exp-12',
-        groupId: 'group-1',
-        title: 'Detergenty i proszek do prania',
-        amount: 89.40,
-        paidBy: 'user-1',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'shopping',
-        date: new Date('2024-11-05'),
-      },
-      {
-        id: 'exp-13',
-        groupId: 'group-1',
-        title: 'IKEA - nowe talerze i kubki',
-        amount: 124.50,
-        paidBy: 'user-2',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'shopping',
-        date: new Date('2024-11-02'),
-      },
-      {
-        id: 'exp-14',
-        groupId: 'group-1',
-        title: 'Restauracja - sushi',
-        amount: 189.00,
-        paidBy: 'user-3',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'food',
-        date: new Date('2024-11-06'),
-      },
-      {
-        id: 'exp-15',
-        groupId: 'group-1',
-        title: 'Kebab na wynos',
-        amount: 42.00,
-        paidBy: 'user-2',
-        splitBetween: ['user-2', 'user-3'],
-        category: 'food',
-        date: new Date('2024-11-04'),
-      },
-      
-      // Poprzedni miesiąc (Październik 2024)
-      {
-        id: 'exp-3',
-        groupId: 'group-1',
-        title: 'Netflix i Spotify',
-        amount: 59.99,
-        paidBy: 'user-3',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'entertainment',
-        date: new Date('2024-10-30'),
-        description: 'Subskrypcje miesięczne',
-      },
-      {
-        id: 'exp-4',
-        groupId: 'group-1',
-        title: 'Pizza na wieczór filmowy',
-        amount: 89.90,
-        paidBy: 'user-1',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'food',
-        date: new Date('2024-10-28'),
-      },
-      {
-        id: 'exp-5',
-        groupId: 'group-1',
-        title: 'Środki czystości',
-        amount: 67.50,
-        paidBy: 'user-2',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'shopping',
-        date: new Date('2024-10-25'),
-      },
-      {
-        id: 'exp-16',
-        groupId: 'group-1',
-        title: 'Rachunki za prąd',
-        amount: 165.00,
-        paidBy: 'user-1',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'utilities',
-        date: new Date('2024-10-01'),
-      },
-      {
-        id: 'exp-17',
-        groupId: 'group-1',
-        title: 'Internet',
-        amount: 99.00,
-        paidBy: 'user-2',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'utilities',
-        date: new Date('2024-10-01'),
-      },
-      {
-        id: 'exp-18',
-        groupId: 'group-1',
-        title: 'Zakupy spożywcze',
-        amount: 198.50,
-        paidBy: 'user-3',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'food',
-        date: new Date('2024-10-15'),
-      },
-      {
-        id: 'exp-19',
-        groupId: 'group-1',
-        title: 'Zakupy spożywcze',
-        amount: 145.20,
-        paidBy: 'user-1',
-        splitBetween: ['user-1', 'user-2', 'user-3'],
-        category: 'food',
-        date: new Date('2024-10-08'),
-      },
-      {
-        id: 'exp-20',
-        groupId: 'group-1',
-        title: 'Koncert',
-        amount: 150.00,
-        paidBy: 'user-2',
-        splitBetween: ['user-1', 'user-2'],
-        category: 'entertainment',
-        date: new Date('2024-10-20'),
-      },
-    ];
-    
-    // Mock shopping list
-    const mockShopping: ShoppingItem[] = [
-      {
-        id: 'shop-1',
-        groupId: 'group-1',
-        name: 'Mleko 2%',
-        quantity: '2 litry',
-        addedBy: 'user-2',
-        purchased: false,
-        estimatedPrice: 7.50,
-        createdAt: new Date('2024-11-06'),
-      },
-      {
-        id: 'shop-2',
-        groupId: 'group-1',
-        name: 'Chleb',
-        quantity: '2 sztuki',
-        addedBy: 'user-1',
-        claimedBy: 'user-3',
-        purchased: false,
-        estimatedPrice: 9.00,
-        createdAt: new Date('2024-11-06'),
-      },
-      {
-        id: 'shop-3',
-        groupId: 'group-1',
-        name: 'Papier toaletowy',
-        quantity: '1 opakowanie (12 rolek)',
-        addedBy: 'user-3',
-        purchased: false,
-        estimatedPrice: 24.99,
-        createdAt: new Date('2024-11-05'),
-      },
-      {
-        id: 'shop-4',
-        groupId: 'group-1',
-        name: 'Pomidory',
-        quantity: '1kg',
-        addedBy: 'user-1',
-        purchased: false,
-        estimatedPrice: 12.00,
-        createdAt: new Date('2024-11-06'),
-      },
-    ];
-    
-    // Mock tasks
-    const mockTasks: Task[] = [
-      {
-        id: 'task-1',
-        groupId: 'group-1',
-        title: 'Odkurzanie całego mieszkania',
-        description: 'Pamiętaj o narożnikach i pod meblami',
-        assignedTo: 'user-1',
-        frequency: 'weekly',
-        completed: false,
-        dueDate: new Date('2024-11-08'),
-        rotationOrder: ['user-1', 'user-2', 'user-3'],
-      },
-      {
-        id: 'task-2',
-        groupId: 'group-1',
-        title: 'Sprzątanie łazienki',
-        assignedTo: 'user-2',
-        frequency: 'weekly',
-        completed: false,
-        dueDate: new Date('2024-11-09'),
-        rotationOrder: ['user-2', 'user-3', 'user-1'],
-      },
-      {
-        id: 'task-3',
-        groupId: 'group-1',
-        title: 'Wyniesienie śmieci',
-        assignedTo: 'user-3',
-        frequency: 'daily',
-        completed: false,
-        dueDate: new Date('2024-11-07'),
-        rotationOrder: ['user-3', 'user-1', 'user-2'],
-      },
-      {
-        id: 'task-4',
-        groupId: 'group-1',
-        title: 'Mycie okien',
-        assignedTo: 'user-1',
-        frequency: 'monthly',
-        completed: false,
-        dueDate: new Date('2024-11-15'),
-        rotationOrder: ['user-1', 'user-2', 'user-3'],
-      },
-    ];
-    
-    // Mock board posts
-    const mockPosts: BoardPost[] = [
-      {
-        id: 'post-1',
-        groupId: 'group-1',
-        authorId: 'user-2',
-        title: 'Impreza w piątek! 🎉',
-        content: 'Hej! W piątek wieczorem zorganizuję małe spotkanie z przyjaciółmi. Będzie nas około 8 osób. Postaram się nie robić za dużo hałasu po 22:00. Dajcie znać jeśli macie jakieś pytania!',
-        createdAt: new Date('2024-11-05T14:30:00'),
-        comments: [
-          {
-            id: 'comment-1',
-            authorId: 'user-1',
-            content: 'Super! Mogę coś przynieść?',
-            createdAt: new Date('2024-11-05T15:00:00'),
-          },
-          {
-            id: 'comment-2',
-            authorId: 'user-3',
-            content: 'Brzmi świetnie, miłej zabawy! 🎊',
-            createdAt: new Date('2024-11-05T16:20:00'),
-          },
-        ],
-      },
-      {
-        id: 'post-2',
-        groupId: 'group-1',
-        authorId: 'user-3',
-        title: 'Naprawa pralki w środę',
-        content: 'Przyjedzie serwisant w środę między 14:00 a 16:00. Ktoś będzie w domu?',
-        createdAt: new Date('2024-11-04T10:15:00'),
-        comments: [
-          {
-            id: 'comment-3',
-            authorId: 'user-1',
-            content: 'Ja mogę być, pracuję zdalnie tego dnia',
-            createdAt: new Date('2024-11-04T11:00:00'),
-          },
-        ],
-      },
-      {
-        id: 'post-3',
-        groupId: 'group-1',
-        authorId: 'user-1',
-        title: 'Nowy sklep w okolicy',
-        content: 'Otworzyła się nowa Żabka naprzeciwko - mają promocje!',
-        createdAt: new Date('2024-11-03T18:00:00'),
-        comments: [],
-      },
-    ];
-    
-    // Mock calendar events
-    const mockEvents: CalendarEvent[] = [
-      {
-        id: 'event-1',
-        groupId: 'group-1',
-        title: 'Wyjazd do rodziny',
-        type: 'absence',
-        userId: 'user-2',
-        startDate: new Date('2024-11-15'),
-        endDate: new Date('2024-11-17'),
-        description: 'Wracam w niedzielę wieczorem',
-      },
-      {
-        id: 'event-2',
-        groupId: 'group-1',
-        title: 'Remont łazienki',
-        type: 'event',
-        userId: 'user-1',
-        startDate: new Date('2024-11-20'),
-        endDate: new Date('2024-11-22'),
-        description: 'Hydraulik będzie wymieniał baterie',
-      },
-    ];
-    
-    // Mock bathroom reservations
-    const mockBathroomReservations: BathroomReservation[] = [
-      {
-        id: 'bath-1',
-        groupId: 'group-1',
-        userId: 'user-2',
-        startTime: new Date(Date.now() + 3600000), // 1 hour from now
-        endTime: new Date(Date.now() + 5400000), // 1.5 hours from now
-        occupied: false,
-      },
-    ];
-    
-    // Mock dishwasher status
-    const mockDishwasher: DishwasherStatus = {
-      groupId: 'group-1',
-      status: 'loading',
-      contributors: ['user-1', 'user-3'],
-    };
+    // Use createMockData to generate all mock data
+    const mockData = createMockData(groupId, userId, otherUsers);
     
     set({ 
       user: mockUser, 
       isAuthenticated: true,
       currentGroup: mockGroup,
-      expenses: mockExpenses,
-      shoppingList: mockShopping,
-      tasks: mockTasks,
-      boardPosts: mockPosts,
-      calendarEvents: mockEvents,
-      bathroomReservations: mockBathroomReservations,
-      dishwasherStatus: mockDishwasher,
+      expenses: mockData.expenses,
+      shoppingList: mockData.shoppingList,
+      tasks: mockData.tasks,
+      boardPosts: mockData.boardPosts,
+      calendarEvents: mockData.calendarEvents,
+      bathroomReservations: mockData.bathroomReservations,
+      dishwasherStatus: mockData.dishwasherStatus,
     });
   },
   
@@ -622,30 +234,61 @@ export const useAppStore = create<AppState>((set, get) => ({
   
   // Group actions
   createGroup: async (name: string) => {
+    const userId = get().user?.id || '';
     const code = Math.random().toString(36).substr(2, 6).toUpperCase();
+    const groupId = Math.random().toString(36).substr(2, 9);
     const group: Group = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: groupId,
       name,
       code,
-      createdBy: get().user?.id || '',
-      members: [get().user?.id || ''],
+      createdBy: userId,
+      members: [userId],
       createdAt: new Date(),
     };
-    set({ currentGroup: group });
+    
+    // Add mock data for the new group
+    const mockData = createMockData(groupId, userId);
+    
+    set({ 
+      currentGroup: group,
+      expenses: mockData.expenses,
+      shoppingList: mockData.shoppingList,
+      tasks: mockData.tasks,
+      boardPosts: mockData.boardPosts,
+      calendarEvents: mockData.calendarEvents,
+      bathroomReservations: mockData.bathroomReservations,
+      dishwasherStatus: mockData.dishwasherStatus,
+    });
     return code;
   },
   
   joinGroup: async (code: string) => {
+    const userId = get().user?.id || '';
     // Mock join - replace with real backend call
+    const groupId = Math.random().toString(36).substr(2, 9);
+    const otherUsers = ['user-2', 'user-3'];
     const group: Group = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: 'Mock Group',
+      id: groupId,
+      name: 'Mieszkanie przy Parkowej 12',
       code,
-      createdBy: 'other-user',
-      members: ['other-user', get().user?.id || ''],
+      createdBy: otherUsers[0],
+      members: [...otherUsers, userId],
       createdAt: new Date(),
     };
-    set({ currentGroup: group });
+    
+    // Add mock data for the joined group
+    const mockData = createMockData(groupId, userId, otherUsers);
+    
+    set({ 
+      currentGroup: group,
+      expenses: mockData.expenses,
+      shoppingList: mockData.shoppingList,
+      tasks: mockData.tasks,
+      boardPosts: mockData.boardPosts,
+      calendarEvents: mockData.calendarEvents,
+      bathroomReservations: mockData.bathroomReservations,
+      dishwasherStatus: mockData.dishwasherStatus,
+    });
   },
   
   leaveGroup: () => {

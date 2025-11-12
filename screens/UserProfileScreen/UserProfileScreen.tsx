@@ -1,12 +1,15 @@
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppStore } from '@/store/useAppStore';
+import { getUserColor } from '@/utils/userNames';
+import { styles } from './UserProfileScreen.style';
 
 export default function UserProfileScreen() {
   const user = useAppStore((state) => state.user);
@@ -35,11 +38,18 @@ export default function UserProfileScreen() {
       >
         <Card style={styles.card}>
           <CardContent style={[styles.cardContent, styles.centerContent]}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{user?.name?.[0]?.toUpperCase() ?? '?'}</Text>
-            </View>
+            <LinearGradient
+              colors={user ? getUserColor(user.id) : ['#9ca3af', '#6b7280']}
+              style={styles.avatar}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Text style={styles.avatarText}>
+                {user?.name?.[0]?.toUpperCase() ?? '?'}
+              </Text>
+            </LinearGradient>
             <Text style={styles.userName}>{user?.name ?? 'Użytkownik'}</Text>
-            <Text style={styles.userEmail}>{user?.email}</Text>
+            <Text style={styles.userEmail}>{user?.email ?? 'Brak email'}</Text>
           </CardContent>
         </Card>
 
@@ -47,9 +57,14 @@ export default function UserProfileScreen() {
           <Card style={styles.card}>
             <CardContent style={styles.cardContent}>
               <View style={styles.groupHeader}>
-                <View style={styles.groupIcon}>
-                  <Ionicons name="home-outline" size={20} color="#1d4ed8" />
-                </View>
+                <LinearGradient
+                  colors={['#155DFC', '#3b82f6']}
+                  style={styles.groupIcon}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <Ionicons name="home-outline" size={20} color="#ffffff" />
+                </LinearGradient>
                 <View>
                   <Text style={styles.groupLabel}>Twoja grupa</Text>
                   <Text style={styles.groupName}>{currentGroup.name}</Text>
@@ -128,157 +143,3 @@ export default function UserProfileScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  scroll: {
-    flex: 1,
-  },
-  contentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-  },
-  card: {
-    borderRadius: 16,
-    marginBottom: 16,
-  },
-  cardContent: {
-    padding: 20,
-  },
-  centerContent: {
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: '#6366f1',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  avatarText: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: '#ffffff',
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  userEmail: {
-    fontSize: 14,
-    color: '#4b5563',
-  },
-  groupHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  groupIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#dbeafe',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  groupLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-  },
-  groupName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  fullWidthButton: {
-    width: '100%',
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonIcon: {
-    marginRight: 8,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#312e81',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  rowTextWrapper: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  rowLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginBottom: 2,
-  },
-  rowValue: {
-    fontSize: 16,
-    color: '#111827',
-  },
-  rowValueMono: {
-    fontSize: 14,
-    color: '#111827',
-    fontFamily: Platform.select({
-      ios: 'Menlo',
-      default: 'monospace',
-    }),
-  },
-  actions: {
-    marginBottom: 16,
-  },
-  actionButton: {
-    marginBottom: 12,
-  },
-  leaveButton: {
-    borderColor: '#fb923c',
-  },
-  leaveButtonText: {
-    color: '#c2410c',
-  },
-  logoutButton: {
-    borderColor: '#fca5a5',
-  },
-  logoutButtonText: {
-    color: '#b91c1c',
-  },
-  infoCard: {
-    backgroundColor: '#eff6ff',
-    borderWidth: 1,
-    borderColor: '#bfdbfe',
-  },
-  infoTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 8,
-    color: '#1d4ed8',
-  },
-  infoText: {
-    fontSize: 14,
-    color: '#1f2937',
-  },
-  infoTextStrong: {
-    fontWeight: '700',
-  },
-  infoVersion: {
-    fontSize: 12,
-    marginTop: 12,
-    color: '#4b5563',
-  },
-});
