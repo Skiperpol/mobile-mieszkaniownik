@@ -1,50 +1,170 @@
-# Welcome to your Expo app 👋
+# Mieszkaniownik 📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplikacja mobilna do zarządzania wspólnym mieszkaniem i współlokatorami. Umożliwia zarządzanie wydatkami, zadaniami domowymi, listą zakupów, rezerwacjami oraz komunikacją między mieszkańcami.
 
-## Get started
+## 🌟 Funkcjonalności
 
-1. Install dependencies
+### 👥 Zarządzanie grupą
+- Tworzenie i dołączanie do grup mieszkaniowych
+- Skanowanie kodów QR do szybkiego dołączania
+- Zarządzanie członkami grupy
+- Generowanie kodów QR dla grup
 
+### 💰 Skarbonka (Wydatki)
+- Dodawanie wydatków wspólnych
+- Niestandardowy podział kosztów między członków
+- Automatyczne rozliczanie długów
+- Raporty miesięczne
+- Kategoryzacja wydatków (jedzenie, zakupy, rachunki, rozrywka, inne)
+
+### 🛒 Lista zakupów
+- Wspólna lista zakupów
+- Przypisywanie produktów do członków
+- Śledzenie kupionych produktów
+- Szacunkowe ceny produktów
+- Usuwanie produktów
+
+### ✅ Zadania domowe
+- Zarządzanie zadaniami z rotacją
+- Częstotliwość zadań (dziennie, tygodniowo, miesięcznie)
+- Przypisywanie zadań do członków
+- Usuwanie zadań
+
+### 📅 Kalendarz
+- Dodawanie wydarzeń i absencji
+- Przeglądanie wydarzeń grupy
+- Usuwanie wydarzeń
+
+### 📋 Tablica ogłoszeń
+- Publikowanie ogłoszeń
+- Dodawanie zdjęć do ogłoszeń
+- Komentarze pod ogłoszeniami
+- Usuwanie własnych ogłoszeń
+
+### 🚿 Łazienka
+- Rezerwacja czasu w łazience
+- Automatyczne zwalnianie wygasłych rezerwacji
+- Status zajętości łazienki
+- Usuwanie rezerwacji
+
+### 🍽️ Zmywarka
+- Status zmywarki (pusta, ładowanie, pracuje, czysta)
+- Wspólne użytkowanie zmywarki
+- Wizualne wskaźniki statusu
+
+### 👤 Profil użytkownika
+- Zarządzanie profilem
+- Informacje o użytkowniku
+
+## 🛠️ Technologie
+
+### Framework i biblioteki główne
+- **React Native** (0.81.5) - Framework do tworzenia aplikacji mobilnych
+- **React** (19.1.0) - Biblioteka UI
+- **Expo** (54.0.23) - Platforma do rozwoju aplikacji React Native
+- **Expo Router** (6.0.14) - Routing oparty na strukturze plików
+- **TypeScript** (5.9.2) - Typowanie statyczne
+
+### Zarządzanie stanem
+- **Zustand** (5.0.8) - Lekka biblioteka do zarządzania stanem globalnym
+
+### Nawigacja
+- **React Navigation** (7.x) - Biblioteka nawigacji
+  - `@react-navigation/native`
+  - `@react-navigation/stack`
+  - `@react-navigation/bottom-tabs`
+  - `@react-navigation/elements`
+
+### UI i komponenty
+- **Expo Vector Icons** (15.0.3) - Ikony (Ionicons)
+- **Expo Linear Gradient** (15.0.7) - Gradienty
+- **Expo Image** (3.0.10) - Optymalizacja obrazów
+- **React Native Safe Area Context** (5.6.0) - Obsługa safe area
+
+### Funkcjonalności
+- **Expo Camera** (17.0.9) - Skanowanie kodów QR
+- **Expo Image Picker** (17.0.8) - Wybór zdjęć z galerii
+- **Expo Clipboard** (8.0.7) - Kopiowanie do schowka
+- **React Native Community DateTimePicker** (8.4.4) - Wybór daty i czasu
+- **React Native QR Code SVG** (6.3.20) - Generowanie kodów QR
+- **React Native Reanimated** (4.1.1) - Animacje
+- **React Native Gesture Handler** (2.28.0) - Obsługa gestów
+- **Expo Haptics** (15.0.7) - Wibracje
+
+### Narzędzia deweloperskie
+- **ESLint** (9.25.0) - Linting kodu
+- **TypeScript** (5.9.2) - Typowanie statyczne
+- **Expo Lint** - Konfiguracja ESLint dla Expo
+
+## 📋 Wymagania
+
+- Node.js (wersja zgodna z Expo 54)
+- npm lub yarn
+- Expo CLI (opcjonalnie)
+- Android Studio (dla Android)
+- Xcode (dla iOS, tylko na macOS)
+
+## 🚀 Instalacja i uruchomienie
+
+1. **Sklonuj repozytorium**
+   ```bash
+   git clone <url-repozytorium>
+   cd mobile-mieszkaniownik
+   ```
+
+2. **Zainstaluj zależności**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Uruchom aplikację**
    ```bash
+   npm start
+   # lub
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+4. **Uruchom na urządzeniu**
+   - **Android**: `npm run android`
+   - **iOS**: `npm run ios`
+   - **Web**: `npm run web`
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🎨 Stylowanie
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Aplikacja używa **React Native StyleSheet** do stylowania komponentów. Każdy ekran ma własny plik stylów (`.style.ts`) z wyeksportowanymi stylami.
 
-## Get a fresh project
+## 📱 Platformy
 
-When you're ready, run:
+- ✅ Android
+- ✅ iOS
+- ✅ Web (Expo Web)
 
-```bash
-npm run reset-project
-```
+## 🔧 Konfiguracja
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Permissions (Android)
+- `CAMERA` - Skanowanie kodów QR
+- `READ_EXTERNAL_STORAGE` - Czytanie zdjęć
+- `READ_MEDIA_IMAGES` - Czytanie zdjęć (Android 13+)
 
-## Learn more
+### Permissions (iOS)
+- `NSPhotoLibraryUsageDescription` - Dostęp do galerii
+- `NSPhotoLibraryAddUsageDescription` - Zapisywanie zdjęć
 
-To learn more about developing your project with Expo, look at the following resources:
+## 📝 Uwagi
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- Aplikacja obecnie używa mock danych (pliki w `store/mockData.ts`)
+- W przyszłości planowana integracja z backendem API
+- Typed routes są włączone (`typedRoutes: true` w `app.json`)
+- React Compiler jest włączony (`reactCompiler: true` w `app.json`)
 
-## Join the community
+## 📄 Licencja
 
-Join our community of developers creating universal apps.
+Prywatny projekt
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 👤 Autor
+
+Dawid
+
+---
+
+**Wersja**: 1.0.0
