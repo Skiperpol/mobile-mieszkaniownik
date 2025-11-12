@@ -93,10 +93,18 @@ export const styles = StyleSheet.create({
     color: '#111827',
   },
   upcomingCard: {
+    paddingVertical: 16,
+  },
+  upcomingCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  upcomingCardLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    paddingVertical: 16,
+    flex: 1,
   },
   avatar: {
     width: 40,
@@ -109,6 +117,9 @@ export const styles = StyleSheet.create({
   upcomingInfo: {
     flex: 1,
     gap: 4,
+  },
+  deleteButton: {
+    padding: 4,
   },
   upcomingUser: {
     fontSize: 15,

@@ -289,13 +289,6 @@ export default function GroupDashboardScreen() {
       {/* <BottomNav
         activeTab="dashboard"
         onTabChange={() => {}}
-        badges={{
-          expenses: expenses.length,
-          shopping: activeShoppingItems,
-          tasks: pendingTasks,
-          calendar: upcomingEvents,
-          board: boardPosts.length,
-        }}
       /> */}
     </View>
   );

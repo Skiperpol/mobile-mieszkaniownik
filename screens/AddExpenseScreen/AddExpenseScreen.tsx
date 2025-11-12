@@ -268,6 +268,9 @@ export default function AddExpenseScreen() {
                     )}
                   </View>
                 ))}
+                {currentGroup && currentGroup.members.length === 0 && (
+                  <Text style={styles.noMembersText}>Brak członków w grupie</Text>
+                )}
               </View>
 
               {selectedMembers.size > 0 && (

@@ -51,7 +51,22 @@ export const styles = StyleSheet.create({
   itemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 8,
+  },
+  itemHeaderLeft: {
+    flex: 1,
+    marginRight: 12,
+  },
+  itemHeaderRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  deleteButton: {
+    padding: 6,
+    borderRadius: 6,
+    backgroundColor: '#fee2e2',
   },
   itemTitle: {
     fontSize: 16,

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -35,20 +35,7 @@ export default function CalendarScreen() {
   const router = useRouter();
   const calendarEvents = useAppStore((state) => state.calendarEvents);
   const user = useAppStore((state) => state.user);
-  const expenses = useAppStore((state) => state.expenses);
-  const shoppingList = useAppStore((state) => state.shoppingList);
-  const tasks = useAppStore((state) => state.tasks);
-  const boardPosts = useAppStore((state) => state.boardPosts);
-
-  const activeShoppingItems = useMemo(
-    () => shoppingList.filter((item) => !item.purchased).length,
-    [shoppingList],
-  );
-  const pendingTasks = useMemo(() => tasks.filter((task) => !task.completed).length, [tasks]);
-  const upcomingEventsCount = useMemo(
-    () => calendarEvents.filter((event) => new Date(event.endDate) >= new Date()).length,
-    [calendarEvents],
-  );
+  const deleteCalendarEvent = useAppStore((state) => state.deleteCalendarEvent);
 
   const sortedEvents = useMemo(
     () =>
@@ -69,6 +56,24 @@ export default function CalendarScreen() {
     const startStr = startDate.toLocaleDateString('pl-PL');
     const endStr = endDate.toLocaleDateString('pl-PL');
     return startStr === endStr ? startStr : `${startStr} - ${endStr}`;
+  };
+
+  const handleDelete = (eventId: string, eventTitle: string) => {
+    Alert.alert(
+      'Usuń wydarzenie',
+      `Czy na pewno chcesz usunąć wydarzenie "${eventTitle}"?`,
+      [
+        {
+          text: 'Anuluj',
+          style: 'cancel',
+        },
+        {
+          text: 'Usuń',
+          style: 'destructive',
+          onPress: () => deleteCalendarEvent(eventId),
+        },
+      ]
+    );
   };
 
   const renderEventBadge = (type: string) => {
@@ -100,7 +105,18 @@ export default function CalendarScreen() {
         events.map((event) => (
           <Card key={event.id} style={styles.card}>
             <CardContent style={styles.cardContent}>
-              <Text style={styles.eventTitle}>{event.title}</Text>
+              <View style={styles.eventHeader}>
+                <Text style={styles.eventTitle}>{event.title}</Text>
+                {event.userId === user?.id ? (
+                  <Pressable
+                    onPress={() => handleDelete(event.id, event.title)}
+                    style={styles.deleteButton}
+                    hitSlop={8}
+                  >
+                    <Ionicons name="trash-outline" size={20} color="#dc2626" />
+                  </Pressable>
+                ) : null}
+              </View>
               {event.description ? (
                 <Text style={styles.eventDescription}>{event.description}</Text>
               ) : null}
@@ -173,17 +189,10 @@ export default function CalendarScreen() {
           : null}
       </ScrollView>
 
-      <BottomNav
+      {/* <BottomNav
         activeTab="calendar"
         onTabChange={handleTabChange}
-        badges={{
-          expenses: expenses.length,
-          shopping: activeShoppingItems,
-          tasks: pendingTasks,
-          calendar: upcomingEventsCount,
-          board: boardPosts.length,
-        }}
-      />
+      /> */}
     </View>
   );
 }

@@ -12,7 +12,6 @@ import { useRouter } from 'expo-router';
 
 import { useAppStore } from '@/store/useAppStore';
 import { Header } from '@/components/Header';
-import { BottomNav } from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getUserName } from '@/utils/userNames';
@@ -38,21 +37,6 @@ export default function ExpensesListScreen() {
   const expenses = useAppStore((state) => state.expenses);
   const currentGroup = useAppStore((state) => state.currentGroup);
   const user = useAppStore((state) => state.user);
-  const shoppingList = useAppStore((state) => state.shoppingList);
-  const tasks = useAppStore((state) => state.tasks);
-  const boardPosts = useAppStore((state) => state.boardPosts);
-  const calendarEvents = useAppStore((state) => state.calendarEvents);
-  
-  const badges = useMemo(
-    () => ({
-      expenses: expenses.length,
-      shopping: shoppingList.filter((item) => !item.purchased).length,
-      tasks: tasks.filter((task) => !task.completed).length,
-      calendar: calendarEvents.filter((event) => new Date(event.endDate) >= new Date()).length,
-      board: boardPosts.length,
-    }),
-    [boardPosts.length, calendarEvents, expenses.length, shoppingList, tasks],
-  );
 
   const balances = useMemo(() => {
     const map: Record<string, number> = {};
@@ -97,13 +81,6 @@ export default function ExpensesListScreen() {
 
   const getCategoryStyle = (category: string) => CATEGORY_STYLES[category] || CATEGORY_STYLES.other;
 
-  const handleTabChange = (tab: string) => {
-    if (tab === 'expenses') router.push('/(group)/expenses');
-    else if (tab === 'shopping') router.push('/(group)/shopping-list');
-    else if (tab === 'tasks') router.push('/(group)/tasks');
-    else if (tab === 'calendar') router.push('/(group)/calendar');
-    else if (tab === 'board') router.push('/(group)/board');
-  };
 
   return (
     <View style={styles.root}>
@@ -128,13 +105,13 @@ export default function ExpensesListScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.summaryGrid}>
-            <Card>
+            <Card style={styles.summaryCardWrapper}>
               <CardContent style={styles.summaryCard}>
                 <Text style={styles.summaryLabel}>Całkowite wydatki</Text>
                 <Text style={styles.summaryValue}>{totalExpenses.toFixed(2)} zł</Text>
               </CardContent>
             </Card>
-            <Card style={myBalance >= 0 ? styles.balancePositive : styles.balanceNegative}>
+            <Card style={[styles.summaryCardWrapper, myBalance >= 0 ? styles.balancePositive : styles.balanceNegative]}>
               <CardContent style={styles.summaryCard}>
                 <Text style={styles.summaryLabel}>Twoje saldo</Text>
                 <Text
@@ -228,7 +205,7 @@ export default function ExpensesListScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <BottomNav activeTab="expenses" onTabChange={handleTabChange} badges={badges} />
+      {/* <BottomNav activeTab="expenses" onTabChange={handleTabChange} /> */}
     </View>
   );
 }

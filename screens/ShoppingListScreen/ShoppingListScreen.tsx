@@ -1,9 +1,8 @@
 import React from 'react';
-import { ScrollView, Text, View, Pressable } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
-import { BottomNav } from '@/components/BottomNav';
 import { Header } from '@/components/Header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,14 +17,7 @@ export default function ShoppingListScreen() {
   const user = useAppStore((state) => state.user);
   const claimShoppingItem = useAppStore((state) => state.claimShoppingItem);
   const markAsPurchased = useAppStore((state) => state.markAsPurchased);
-  const expenses = useAppStore((state) => state.expenses);
-  const tasks = useAppStore((state) => state.tasks);
-  const boardPosts = useAppStore((state) => state.boardPosts);
-  const calendarEvents = useAppStore((state) => state.calendarEvents);
-
-  const activeShoppingItems = shoppingList.filter((item) => !item.purchased).length;
-  const pendingTasks = tasks.filter((task) => !task.completed).length;
-  const upcomingEvents = calendarEvents.filter((event) => new Date(event.endDate) >= new Date()).length;
+  const deleteShoppingItem = useAppStore((state) => state.deleteShoppingItem);
 
   const activeItems = shoppingList.filter((item) => !item.purchased);
   const purchasedItems = shoppingList.filter((item) => item.purchased);
@@ -39,13 +31,24 @@ export default function ShoppingListScreen() {
     markAsPurchased(itemId);
   };
 
-  const handleTabChange = (tab: string) => {
-    if (tab === 'expenses') router.push('/(group)/expenses');
-    else if (tab === 'shopping') router.push('/(group)/shopping-list');
-    else if (tab === 'tasks') router.push('/(group)/tasks');
-    else if (tab === 'calendar') router.push('/(group)/calendar');
-    else if (tab === 'board') router.push('/(group)/board');
+  const handleDelete = (itemId: string, itemName: string) => {
+    Alert.alert(
+      'Usuń produkt',
+      `Czy na pewno chcesz usunąć "${itemName}" z listy zakupów?`,
+      [
+        {
+          text: 'Anuluj',
+          style: 'cancel',
+        },
+        {
+          text: 'Usuń',
+          style: 'destructive',
+          onPress: () => deleteShoppingItem(itemId),
+        },
+      ]
+    );
   };
+
 
   const renderEmptyState = () => (
     <Card style={styles.card}>
@@ -97,14 +100,25 @@ export default function ShoppingListScreen() {
 
                       <View style={styles.itemBody}>
                         <View style={styles.itemHeader}>
-                          <View>
+                          <View style={styles.itemHeaderLeft}>
                             <Text style={styles.itemTitle}>{item.name}</Text>
                             {item.quantity ? <Text style={styles.itemSubtitle}>{item.quantity}</Text> : null}
                           </View>
 
-                          {item.estimatedPrice ? (
-                            <Text style={styles.itemPrice}>{item.estimatedPrice.toFixed(2)} zł</Text>
-                          ) : null}
+                          <View style={styles.itemHeaderRight}>
+                            {item.estimatedPrice ? (
+                              <Text style={styles.itemPrice}>{item.estimatedPrice.toFixed(2)} zł</Text>
+                            ) : null}
+                            {item.addedBy === user?.id ? (
+                              <Pressable
+                                onPress={() => handleDelete(item.id, item.name)}
+                                style={styles.deleteButton}
+                                hitSlop={8}
+                              >
+                                <Ionicons name="trash-outline" size={20} color="#dc2626" />
+                              </Pressable>
+                            ) : null}
+                          </View>
                         </View>
 
                         <View style={styles.itemFooter}>
@@ -141,19 +155,31 @@ export default function ShoppingListScreen() {
             {purchasedItems.map((item) => (
               <Card key={item.id} style={[styles.card, styles.purchasedCard]}>
                 <CardContent style={styles.cardContent}>
-                  <View style={styles.itemRow}>
+                    <View style={styles.itemRow}>
                     <Checkbox checked disabled />
                     <View style={styles.itemBody}>
                       <View style={styles.itemHeader}>
-                        <View>
+                        <View style={styles.itemHeaderLeft}>
                           <Text style={[styles.itemTitle, styles.purchasedText]}>{item.name}</Text>
                           {item.quantity ? (
                             <Text style={[styles.itemSubtitle, styles.purchasedText]}>{item.quantity}</Text>
                           ) : null}
                         </View>
-                        {item.estimatedPrice ? (
-                          <Text style={styles.itemPrice}>{item.estimatedPrice.toFixed(2)} zł</Text>
-                        ) : null}
+
+                        <View style={styles.itemHeaderRight}>
+                          {item.estimatedPrice ? (
+                            <Text style={styles.itemPrice}>{item.estimatedPrice.toFixed(2)} zł</Text>
+                          ) : null}
+                          {item.addedBy === user?.id ? (
+                            <Pressable
+                              onPress={() => handleDelete(item.id, item.name)}
+                              style={styles.deleteButton}
+                              hitSlop={8}
+                            >
+                              <Ionicons name="trash-outline" size={20} color="#dc2626" />
+                            </Pressable>
+                          ) : null}
+                        </View>
                       </View>
                     </View>
                   </View>
@@ -164,17 +190,10 @@ export default function ShoppingListScreen() {
         ) : null}
       </ScrollView>
 
-      <BottomNav
+      {/* <BottomNav
         activeTab="shopping"
         onTabChange={handleTabChange}
-        badges={{
-          expenses: expenses.length,
-          shopping: activeShoppingItems,
-          tasks: pendingTasks,
-          calendar: upcomingEvents,
-          board: boardPosts.length,
-        }}
-      />
+      /> */}
     </View>
   );
 }

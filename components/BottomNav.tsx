@@ -1,18 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAppStore } from '@/store/useAppStore';
 
 interface BottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
-  badges?: {
-    expenses?: number;
-    shopping?: number;
-    tasks?: number;
-    calendar?: number;
-    board?: number;
-  };
 }
 
 const TAB_CONFIG = {
@@ -64,15 +58,32 @@ const TAB_CONFIG = {
   },
 } as const;
 
-const tabs = Object.entries(TAB_CONFIG) as Array<[keyof typeof TAB_CONFIG, (typeof TAB_CONFIG)['expenses']]>;
+const tabs = Object.entries(TAB_CONFIG) as [keyof typeof TAB_CONFIG, (typeof TAB_CONFIG)['expenses']][];
 
-export function BottomNav({ activeTab, onTabChange, badges }: BottomNavProps) {
+export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+  const expenses = useAppStore((state) => state.expenses);
+  const shoppingList = useAppStore((state) => state.shoppingList);
+  const tasks = useAppStore((state) => state.tasks);
+  const calendarEvents = useAppStore((state) => state.calendarEvents);
+  const boardPosts = useAppStore((state) => state.boardPosts);
+
+  const badges = useMemo(() => {
+    const now = new Date();
+    return {
+      expenses: expenses.length,
+      shopping: shoppingList.filter((item) => !item.purchased).length,
+      tasks: tasks.filter((task) => !task.completed).length,
+      calendar: calendarEvents.filter((event) => new Date(event.endDate) >= now).length,
+      board: boardPosts.length,
+    };
+  }, [expenses, shoppingList, tasks, calendarEvents, boardPosts]);
+
   return (
     <SafeAreaView edges={['bottom']} style={styles.safeArea}>
       <View style={styles.container}>
         {tabs.map(([tabId, tab]) => {
           const focused = activeTab === tabId;
-          const badgeCount = badges?.[tabId] ?? 0;
+          const badgeCount = badges[tabId] ?? 0;
           return (
             <Pressable
               key={tabId}

@@ -23,10 +23,16 @@ export const styles = StyleSheet.create({
   },
   summaryGrid: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
+    width: '100%',
+  },
+  summaryCardWrapper: {
+    flex: 1,
+    minWidth: 0,
   },
   summaryCard: {
     gap: 8,
+    padding: 16,
   },
   summaryLabel: {
     fontSize: 13,

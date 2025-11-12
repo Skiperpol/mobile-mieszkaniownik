@@ -29,11 +29,21 @@ export const styles = StyleSheet.create({
   cardContent: {
     padding: 20,
   },
+  eventHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 4,
+  },
   eventTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#111827',
-    marginBottom: 4,
+    flex: 1,
+    marginRight: 8,
+  },
+  deleteButton: {
+    padding: 4,
   },
   eventDescription: {
     fontSize: 14,

@@ -1,13 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
+  Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   Text,
   View,
-  Image,
-  Pressable,
-  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -26,24 +26,9 @@ export default function BoardPostsScreen() {
   const user = useAppStore((state) => state.user);
   const addComment = useAppStore((state) => state.addComment);
   const deleteBoardPost = useAppStore((state) => state.deleteBoardPost);
-  const expenses = useAppStore((state) => state.expenses);
-  const shoppingList = useAppStore((state) => state.shoppingList);
-  const tasks = useAppStore((state) => state.tasks);
-  const calendarEvents = useAppStore((state) => state.calendarEvents);
 
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set());
-
-  const badges = useMemo(
-    () => ({
-      expenses: expenses.length,
-      shopping: shoppingList.filter((item) => !item.purchased).length,
-      tasks: tasks.filter((task) => !task.completed).length,
-      calendar: calendarEvents.filter((event) => new Date(event.endDate) >= new Date()).length,
-      board: boardPosts.length,
-    }),
-    [boardPosts.length, calendarEvents, expenses.length, shoppingList, tasks],
-  );
 
   const sortedPosts = useMemo(
     () =>
@@ -243,7 +228,7 @@ export default function BoardPostsScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <BottomNav activeTab="board" onTabChange={handleTabChange} badges={badges} />
+      {/* <BottomNav activeTab="board" onTabChange={handleTabChange} /> */}
     </View>
   );
 }

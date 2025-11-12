@@ -136,10 +136,12 @@ export interface AppState {
   addShoppingItem: (item: Omit<ShoppingItem, 'id' | 'createdAt'>) => void;
   claimShoppingItem: (itemId: string, userId: string) => void;
   markAsPurchased: (itemId: string) => void;
+  deleteShoppingItem: (itemId: string) => void;
   
   // Actions - Tasks
   addTask: (task: Omit<Task, 'id'>) => void;
   completeTask: (taskId: string) => void;
+  deleteTask: (taskId: string) => void;
   
   // Actions - Board
   addBoardPost: (post: Omit<BoardPost, 'id' | 'createdAt' | 'comments'>) => void;
@@ -148,10 +150,12 @@ export interface AppState {
   
   // Actions - Calendar
   addCalendarEvent: (event: Omit<CalendarEvent, 'id'>) => void;
+  deleteCalendarEvent: (eventId: string) => void;
   
   // Actions - Bathroom
   reserveBathroom: (reservation: Omit<BathroomReservation, 'id'>) => void;
   releaseBathroom: (reservationId: string) => void;
+  deleteBathroomReservation: (reservationId: string) => void;
   
   // Actions - Dishwasher
   updateDishwasherStatus: (status: DishwasherStatus['status'], userId?: string) => void;
@@ -363,6 +367,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   
+  deleteShoppingItem: (itemId) => {
+    set({
+      shoppingList: get().shoppingList.filter(item => item.id !== itemId),
+    });
+  },
+  
   // Task actions
   addTask: (task) => {
     const newTask: Task = {
@@ -394,6 +404,12 @@ export const useAppStore = create<AppState>((set, get) => ({
         ),
       });
     }
+  },
+  
+  deleteTask: (taskId) => {
+    set({
+      tasks: get().tasks.filter(task => task.id !== taskId),
+    });
   },
   
   // Board actions
@@ -437,6 +453,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ calendarEvents: [...get().calendarEvents, newEvent] });
   },
   
+  deleteCalendarEvent: (eventId) => {
+    set({
+      calendarEvents: get().calendarEvents.filter(event => event.id !== eventId),
+    });
+  },
+  
   // Bathroom actions
   reserveBathroom: (reservation) => {
     const newReservation: BathroomReservation = {
@@ -451,6 +473,12 @@ export const useAppStore = create<AppState>((set, get) => ({
       bathroomReservations: get().bathroomReservations.map(r =>
         r.id === reservationId ? { ...r, occupied: false } : r
       ),
+    });
+  },
+  
+  deleteBathroomReservation: (reservationId) => {
+    set({
+      bathroomReservations: get().bathroomReservations.filter(r => r.id !== reservationId),
     });
   },
   

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   Text,
   View,
@@ -43,6 +45,7 @@ export default function BathroomStatusScreen() {
   const currentGroup = useAppStore((state) => state.currentGroup);
   const reserveBathroom = useAppStore((state) => state.reserveBathroom);
   const releaseBathroom = useAppStore((state) => state.releaseBathroom);
+  const deleteBathroomReservation = useAppStore((state) => state.deleteBathroomReservation);
 
   // Update current time every minute
   useEffect(() => {
@@ -112,6 +115,24 @@ export default function BathroomStatusScreen() {
     if (currentReservation) {
       releaseBathroom(currentReservation.id);
     }
+  };
+
+  const handleDelete = (reservationId: string) => {
+    Alert.alert(
+      'Usuń rezerwację',
+      'Czy na pewno chcesz usunąć tę rezerwację?',
+      [
+        {
+          text: 'Anuluj',
+          style: 'cancel',
+        },
+        {
+          text: 'Usuń',
+          style: 'destructive',
+          onPress: () => deleteBathroomReservation(reservationId),
+        },
+      ]
+    );
   };
 
   const selectedDate = startDateTime ? new Date(startDateTime) : null;
@@ -249,17 +270,30 @@ export default function BathroomStatusScreen() {
                 return (
                   <Card key={reservation.id}>
                     <CardContent style={styles.upcomingCard}>
-                      <View style={styles.avatar}>
-                        <Ionicons name="person" size={20} color="#155DFC" />
-                      </View>
-                      <View style={styles.upcomingInfo}>
-                        <Text style={styles.upcomingUser}>
-                          {isMyReservation(reservation.userId) ? 'Ty' : reservation.userId}
-                        </Text>
-                        <View style={styles.upcomingTimeRow}>
-                          <Ionicons name="time-outline" size={16} color="#6b7280" />
-                          <Text style={styles.upcomingTime}>{formatTimeRange(start, end)}</Text>
+                      <View style={styles.upcomingCardContent}>
+                        <View style={styles.upcomingCardLeft}>
+                          <View style={styles.avatar}>
+                            <Ionicons name="person" size={20} color="#155DFC" />
+                          </View>
+                          <View style={styles.upcomingInfo}>
+                            <Text style={styles.upcomingUser}>
+                              {isMyReservation(reservation.userId) ? 'Ty' : reservation.userId}
+                            </Text>
+                            <View style={styles.upcomingTimeRow}>
+                              <Ionicons name="time-outline" size={16} color="#6b7280" />
+                              <Text style={styles.upcomingTime}>{formatTimeRange(start, end)}</Text>
+                            </View>
+                          </View>
                         </View>
+                        {isMyReservation(reservation.userId) ? (
+                          <Pressable
+                            onPress={() => handleDelete(reservation.id)}
+                            style={styles.deleteButton}
+                            hitSlop={8}
+                          >
+                            <Ionicons name="trash-outline" size={20} color="#dc2626" />
+                          </Pressable>
+                        ) : null}
                       </View>
                     </CardContent>
                   </Card>

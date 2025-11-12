@@ -40,10 +40,15 @@ export const styles = StyleSheet.create({
   taskHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 12,
   },
   taskTitleWrapper: {
     flex: 1,
+    marginRight: 8,
+  },
+  deleteButton: {
+    padding: 4,
   },
   taskTitle: {
     fontSize: 16,

@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import React from 'react';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -42,26 +42,31 @@ export default function TasksScheduleScreen() {
   const tasks = useAppStore((state) => state.tasks);
   const user = useAppStore((state) => state.user);
   const completeTask = useAppStore((state) => state.completeTask);
-  const expenses = useAppStore((state) => state.expenses);
-  const shoppingList = useAppStore((state) => state.shoppingList);
-  const boardPosts = useAppStore((state) => state.boardPosts);
-  const calendarEvents = useAppStore((state) => state.calendarEvents);
-
-  const activeShoppingItems = useMemo(
-    () => shoppingList.filter((item) => !item.purchased).length,
-    [shoppingList],
-  );
-  const pendingTasks = useMemo(() => tasks.filter((task) => !task.completed).length, [tasks]);
-  const upcomingEvents = useMemo(
-    () => calendarEvents.filter((event) => new Date(event.endDate) >= new Date()).length,
-    [calendarEvents],
-  );
+  const deleteTask = useAppStore((state) => state.deleteTask);
 
   const myTasks = tasks.filter((task) => task.assignedTo === user?.id);
   const otherTasks = tasks.filter((task) => task.assignedTo !== user?.id);
 
   const handleComplete = (taskId: string) => {
     completeTask(taskId);
+  };
+
+  const handleDelete = (taskId: string, taskTitle: string) => {
+    Alert.alert(
+      'Usuń zadanie',
+      `Czy na pewno chcesz usunąć zadanie "${taskTitle}"?`,
+      [
+        {
+          text: 'Anuluj',
+          style: 'cancel',
+        },
+        {
+          text: 'Usuń',
+          style: 'destructive',
+          onPress: () => deleteTask(taskId),
+        },
+      ]
+    );
   };
 
   const isOverdue = (dueDate: Date) => new Date(dueDate) < new Date();
@@ -136,6 +141,13 @@ export default function TasksScheduleScreen() {
                           <Text style={styles.taskDescription}>{task.description}</Text>
                         ) : null}
                       </View>
+                      <Pressable
+                        onPress={() => handleDelete(task.id, task.title)}
+                        style={styles.deleteButton}
+                        hitSlop={8}
+                      >
+                        <Ionicons name="trash-outline" size={20} color="#dc2626" />
+                      </Pressable>
                     </View>
 
                     <View style={styles.taskMeta}>
@@ -188,6 +200,13 @@ export default function TasksScheduleScreen() {
                         <Text style={styles.taskDescription}>{task.description}</Text>
                       ) : null}
                     </View>
+                    <Pressable
+                      onPress={() => handleDelete(task.id, task.title)}
+                      style={styles.deleteButton}
+                      hitSlop={8}
+                    >
+                      <Ionicons name="trash-outline" size={20} color="#dc2626" />
+                    </Pressable>
                   </View>
 
                   <View style={styles.taskMeta}>
@@ -231,17 +250,10 @@ export default function TasksScheduleScreen() {
         ) : null}
       </ScrollView>
 
-      <BottomNav
+      {/* <BottomNav
         activeTab="tasks"
         onTabChange={handleTabChange}
-        badges={{
-          expenses: expenses.length,
-          shopping: activeShoppingItems,
-          tasks: pendingTasks,
-          calendar: upcomingEvents,
-          board: boardPosts.length,
-        }}
-      />
+      /> */}
     </View>
   );
 }
