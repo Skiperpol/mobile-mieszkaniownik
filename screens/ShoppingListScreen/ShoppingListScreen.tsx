@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
 import { styles } from './ShoppingListScreen.style';
 
 export default function ShoppingListScreen() {

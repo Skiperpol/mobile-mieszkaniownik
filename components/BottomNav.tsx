@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
 
 interface BottomNavProps {
   activeTab: string;

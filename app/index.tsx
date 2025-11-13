@@ -1,5 +1,6 @@
 import { Redirect } from 'expo-router';
-import { useAppStore, AppState } from '../store/useAppStore';
+import { useAppStore } from '../hooks/useAppStore';
+import type { AppState } from '../types/app';
 
 export default function RootIndex() {
   const isAuthenticated = useAppStore((status: AppState) => status.isAuthenticated);

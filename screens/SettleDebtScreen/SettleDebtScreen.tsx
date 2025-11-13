@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
 import { styles } from './SettleDebtScreen.style';
 
 export default function SettleDebtScreen() {

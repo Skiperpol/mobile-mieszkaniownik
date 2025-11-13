@@ -7,7 +7,7 @@ import { Header } from '@/components/Header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
 import { styles } from './DishwasherScreen.style';
 
 const statusStyles = {

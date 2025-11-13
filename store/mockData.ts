@@ -1,4 +1,4 @@
-import {
+import type {
   Expense,
   ShoppingItem,
   Task,
@@ -6,7 +6,7 @@ import {
   CalendarEvent,
   BathroomReservation,
   DishwasherStatus,
-} from './useAppStore';
+} from '../types/app';
 
 /**
  * Helper function to create mock data for a group

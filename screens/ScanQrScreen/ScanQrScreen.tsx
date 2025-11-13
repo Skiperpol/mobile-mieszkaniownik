@@ -4,7 +4,7 @@ import { Camera, BarcodeScanningResult, CameraView } from 'expo-camera';
 import { useRouter } from 'expo-router';
 
 import { Button } from '@/components/ui/button';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
 import styles from './ScanQrScreen.style';
 
 type PermissionStatus = 'unknown' | 'granted' | 'denied';

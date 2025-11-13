@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Header } from '@/components/Header';
-import { useAppStore, AppState } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
+import type { AppState } from '@/types/app';
 import { useRouter } from 'expo-router';
 import { styles } from '@/screens/RegisterScreen/RegisterScreen.style';
 

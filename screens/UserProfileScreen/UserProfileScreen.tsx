@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
 import { getUserColor } from '@/utils/userNames';
 import { styles } from './UserProfileScreen.style';
 

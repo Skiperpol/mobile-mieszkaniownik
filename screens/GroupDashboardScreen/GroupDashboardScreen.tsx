@@ -5,7 +5,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Header } from '@/components/Header';
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
 import { useRouter } from 'expo-router';
 import { styles } from './GroupDashboardScreen.style';
 

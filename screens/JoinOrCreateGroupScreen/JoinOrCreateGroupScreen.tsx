@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { useAppStore } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
 import { useRouter } from 'expo-router';
 import { styles } from './JoinOrCreateGroupScreen.style';
 import { SelectMode } from './components/SelectMode';

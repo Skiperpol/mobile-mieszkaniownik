@@ -14,7 +14,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAppStore, AppState } from '@/store/useAppStore';
+import { useAppStore } from '@/hooks/useAppStore';
+import type { AppState } from '@/types/app';
 import { useRouter } from 'expo-router';
 import { styles } from '@/screens/LoginScreen/LoginScreen.style';
 
