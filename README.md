@@ -69,7 +69,8 @@ Aplikacja mobilna do zarządzania wspólnym mieszkaniem i współlokatorami. Umo
 - **Zustand** (5.0.8) - Lekka biblioteka do zarządzania stanem globalnym
 
 ### Nawigacja
-- **React Navigation** (7.x) - Biblioteka nawigacji
+- **Expo Router** (6.0.14) - Routing oparty na strukturze plików
+- **React Navigation** (7.x) - Biblioteka nawigacji (zależność Expo Router)
   - `@react-navigation/native`
   - `@react-navigation/stack`
   - `@react-navigation/bottom-tabs`
@@ -87,8 +88,8 @@ Aplikacja mobilna do zarządzania wspólnym mieszkaniem i współlokatorami. Umo
 - **Expo Clipboard** (8.0.7) - Kopiowanie do schowka
 - **React Native Community DateTimePicker** (8.4.4) - Wybór daty i czasu
 - **React Native QR Code SVG** (6.3.20) - Generowanie kodów QR
-- **React Native Reanimated** (4.1.1) - Animacje
-- **React Native Gesture Handler** (2.28.0) - Obsługa gestów
+- **React Native Reanimated** (4.1.1) - Animacje (zależność Expo Router)
+- **React Native Gesture Handler** (2.28.0) - Obsługa gestów (zależność Expo Router)
 - **Expo Haptics** (15.0.7) - Wibracje
 
 ### Narzędzia deweloperskie
