@@ -6,6 +6,7 @@ import {
   ScrollView,
   Text,
   View,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 
@@ -20,7 +21,7 @@ import { DatePickerField } from '@/components/ui/date-picker';
 import { validateTitle, validateDateRange } from '@/utils/validation';
 import { styles } from './AddCalendarEventScreen.style';
 
-const TYPES: Array<{ value: 'absence' | 'event'; label: string; description: string }> = [
+const TYPES: { value: 'absence' | 'event'; label: string; description: string }[] = [
   { value: 'absence', label: 'Nieobecność', description: 'Informacja o Twojej nieobecności w mieszkaniu' },
   { value: 'event', label: 'Wydarzenie', description: 'Wspólne wydarzenie lub ważna informacja dla mieszkańców' },
 ];
@@ -40,26 +41,13 @@ export default function AddCalendarEventScreen() {
   const [errors, setErrors] = useState<{ title?: string; startDate?: string; endDate?: string }>({});
 
   const handleSubmit = () => {
-    const newErrors: { title?: string; startDate?: string; endDate?: string } = {};
-    
-    newErrors.title = validateTitle(title);
-    const dateRangeError = validateDateRange(startDate, endDate);
-    if (dateRangeError) {
-      if (!startDate) {
-        newErrors.startDate = dateRangeError;
-      } else {
-        newErrors.endDate = dateRangeError;
-      }
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!currentGroup || !user) {
+      Alert.alert('Błąd', 'Musisz być zalogowany i należeć do grupy, aby dodać wydarzenie do kalendarza.');
       return;
     }
 
-    setErrors({});
-    
-    if (!currentGroup || !user) {
+    if (!startDate || !endDate) {
+      Alert.alert('Błąd', 'Musisz wybrać datę początkową i końcową.');
       return;
     }
 

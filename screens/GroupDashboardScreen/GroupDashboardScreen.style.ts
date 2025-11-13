@@ -38,11 +38,12 @@ export const styles = StyleSheet.create({
       flexDirection: 'row',
       flexWrap: 'wrap',
       marginHorizontal: -6,
+      marginBottom: -12,
     },
     cardWrapper: {
       width: '50%',
       paddingHorizontal: 6,
-      paddingVertical: 6,
+      marginBottom: 12,
     },
     cardPressed: {
       transform: [{ scale: 0.98 }],

@@ -97,6 +97,7 @@ export const styles = StyleSheet.create({
     borderTopColor: '#e5e7eb',
     paddingTop: 12,
     gap: 12,
+    width: '100%',
   },
   commentToggle: {
     alignSelf: 'flex-start',
@@ -113,6 +114,7 @@ export const styles = StyleSheet.create({
   },
   commentsList: {
     gap: 12,
+    width: '100%',
   },
   commentCard: {
     backgroundColor: '#f3f4f6',
@@ -155,16 +157,24 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    width: '85%',
+  },
+  commentInputContainer: {
+    flex: 1,
+    margin: 0,
   },
   commentInput: {
-    flex: 1,
+    margin: 0,
   },
   sendButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    flexShrink: 0,
   },
 });
 

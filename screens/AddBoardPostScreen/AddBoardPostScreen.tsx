@@ -66,30 +66,23 @@ export default function AddBoardPostScreen() {
   const [errors, setErrors] = useState<{ title?: string; content?: string }>({});
 
   const handleSubmit = () => {
-    const newErrors: { title?: string; content?: string } = {};
-    
-    newErrors.title = validateTitle(title);
-    newErrors.content = validateRequired(content, 'Treść');
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setErrors({});
-    
     if (!currentGroup || !user) {
+      Alert.alert('Błąd', 'Musisz być zalogowany i należeć do grupy, aby dodać ogłoszenie.');
       return;
     }
 
-    addBoardPost({
+    const postData: Parameters<typeof addBoardPost>[0] = {
       groupId: currentGroup.id,
       authorId: user.id,
       title: title.trim(),
       content: content.trim(),
-      imageUrl: imageUri || undefined,
-    });
+    };
 
+    if (imageUri) {
+      postData.imageUrl = imageUri;
+    }
+
+    addBoardPost(postData);
     router.back();
   };
 
