@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { useAppStore } from '@/hooks/useAppStore';
 import type { AppState } from '@/types/app';
 import { useRouter } from 'expo-router';
+import { validateEmail, validatePassword } from '@/utils/validation';
 import { styles } from '@/screens/LoginScreen/LoginScreen.style';
 
 
@@ -24,19 +25,27 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const login = useAppStore((status: AppState) => status.login);
   const router = useRouter();
   
   const handleLogin = useCallback(async () => {
-    if (!email || !password) {
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+    
+    if (emailError || passwordError) {
+      setErrors({ email: emailError, password: passwordError });
       return;
     }
+    
+    setErrors({});
     setLoading(true);
     try {
       await login(email.trim(), password);
       router.replace('/join-or-create');
     } catch (error) {
       console.error('Login failed:', error);
+      setErrors({ password: 'Nieprawidłowy e-mail lub hasło' });
     } finally {
       setLoading(false);
     }
@@ -68,25 +77,37 @@ export default function LoginScreen() {
                 <Label>E-mail</Label>
                 <Input
                   value={email}
-                  onChangeText={setEmail}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (errors.email) {
+                      setErrors((prev) => ({ ...prev, email: undefined }));
+                    }
+                  }}
                   placeholder="twoj@email.com"
                   autoCapitalize="none"
                   keyboardType="email-address"
                   textContentType="emailAddress"
                   autoComplete="email"
                 />
+                {errors.email && <Text style={styles.error}>{errors.email}</Text>}
               </View>
 
               <View style={styles.field}>
                 <Label>Hasło</Label>
                 <Input
                   value={password}
-                  onChangeText={setPassword}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (errors.password) {
+                      setErrors((prev) => ({ ...prev, password: undefined }));
+                    }
+                  }}
                   placeholder="••••••••"
                   secureTextEntry
                   textContentType="password"
                   autoComplete="off"
                 />
+                {errors.password && <Text style={styles.error}>{errors.password}</Text>}
               </View>
 
               <Button onPress={handleLogin} loading={loading}>

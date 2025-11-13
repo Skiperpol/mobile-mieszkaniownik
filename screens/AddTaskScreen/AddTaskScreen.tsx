@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { DatePickerField } from '@/components/ui/date-picker';
+import { validateTitle, validateDate } from '@/utils/validation';
 import { styles } from './AddTaskScreen.style';
 
 const FREQUENCY_OPTIONS: Array<{ value: 'daily' | 'weekly' | 'monthly'; label: string; description: string }> = [
@@ -37,8 +38,22 @@ export default function AddTaskScreen() {
 
   const firstMember = useMemo(() => currentGroup?.members[0], [currentGroup?.members]);
 
+  const [errors, setErrors] = useState<{ title?: string; dueDate?: string }>({});
+
   const handleSubmit = () => {
-    if (!currentGroup || !firstMember || !title.trim() || !dueDate) {
+    const newErrors: { title?: string; dueDate?: string } = {};
+    
+    newErrors.title = validateTitle(title, 'Nazwa zadania');
+    newErrors.dueDate = validateDate(dueDate, 'Data');
+
+    if (newErrors.title || newErrors.dueDate) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    
+    if (!currentGroup || !firstMember) {
       return;
     }
 
@@ -81,10 +96,16 @@ export default function AddTaskScreen() {
                 <Input
                   placeholder="np. Odkurzyć salon"
                   value={title}
-                  onChangeText={setTitle}
+                  onChangeText={(text) => {
+                    setTitle(text);
+                    if (errors.title) {
+                      setErrors((prev) => ({ ...prev, title: undefined }));
+                    }
+                  }}
                   autoCapitalize="sentences"
                   returnKeyType="next"
                 />
+                {errors.title && <Text style={styles.error}>{errors.title}</Text>}
               </View>
 
               <View style={styles.field}>
@@ -130,9 +151,15 @@ export default function AddTaskScreen() {
                 <Label>Pierwszy termin</Label>
                 <DatePickerField
                   value={dueDate}
-                  onChange={setDueDate}
+                  onChange={(date) => {
+                    setDueDate(date);
+                    if (errors.dueDate) {
+                      setErrors((prev) => ({ ...prev, dueDate: undefined }));
+                    }
+                  }}
                   placeholder="Wybierz datę"
                 />
+                {errors.dueDate && <Text style={styles.error}>{errors.dueDate}</Text>}
               </View>
 
               <View style={styles.infoBox}>

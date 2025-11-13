@@ -16,6 +16,7 @@ import { Header } from '@/components/Header';
 import { useAppStore } from '@/hooks/useAppStore';
 import type { AppState } from '@/types/app';
 import { useRouter } from 'expo-router';
+import { validateEmail, validatePassword, validateConfirmPassword, validateName } from '@/utils/validation';
 import { styles } from '@/screens/RegisterScreen/RegisterScreen.style';
 
 export default function RegisterScreen() {
@@ -24,34 +25,38 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; confirmPassword?: string }>({});
   const register = useAppStore((status: AppState) => status.register);
   const router = useRouter();
 
-  const errorMessage = useMemo(() => {
-    if (!password || !confirmPassword) {
-      return undefined;
-    }
-    if (password !== confirmPassword) {
-      return 'Hasła nie są identyczne';
-    }
-    if (password.length < 6) {
-      return 'Hasło musi mieć co najmniej 6 znaków';
-    }
-    return undefined;
-  }, [confirmPassword, password]);
-
   const handleRegister = useCallback(async () => {
-    if (errorMessage) return;
+    const nameError = validateName(name);
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+    const confirmPasswordError = validateConfirmPassword(confirmPassword, password);
+
+    if (nameError || emailError || passwordError || confirmPasswordError) {
+      setErrors({
+        name: nameError,
+        email: emailError,
+        password: passwordError,
+        confirmPassword: confirmPasswordError,
+      });
+      return;
+    }
+
+    setErrors({});
     setLoading(true);
     try {
       await register(email.trim(), password, name.trim());
       router.replace('/join-or-create');
     } catch (error) {
       console.error('Registration failed:', error);
+      setErrors({ email: 'Rejestracja nie powiodła się. Spróbuj ponownie.' });
     } finally {
       setLoading(false);
     }
-  }, [email, errorMessage, name, router, password, register]);
+  }, [email, name, router, password, confirmPassword, register]);
 
   return (
     <View style={styles.root}>
@@ -71,46 +76,76 @@ export default function RegisterScreen() {
             <View style={styles.form}>
               <View style={styles.field}>
                 <Label>Imię</Label>
-                <Input value={name} onChangeText={setName} placeholder="Twoje imię" textContentType="name" />
+                <Input
+                  value={name}
+                  onChangeText={(text) => {
+                    setName(text);
+                    if (errors.name) {
+                      setErrors((prev) => ({ ...prev, name: undefined }));
+                    }
+                  }}
+                  placeholder="Twoje imię"
+                  textContentType="name"
+                />
+                {errors.name && <Text style={styles.error}>{errors.name}</Text>}
               </View>
 
               <View style={styles.field}>
                 <Label>Email</Label>
                 <Input
                   value={email}
-                  onChangeText={setEmail}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (errors.email) {
+                      setErrors((prev) => ({ ...prev, email: undefined }));
+                    }
+                  }}
                   placeholder="twoj@email.com"
                   autoCapitalize="none"
                   keyboardType="email-address"
                   textContentType="emailAddress"
                 />
+                {errors.email && <Text style={styles.error}>{errors.email}</Text>}
               </View>
 
               <View style={styles.field}>
                 <Label>Hasło</Label>
                 <Input
                   value={password}
-                  onChangeText={setPassword}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (errors.password) {
+                      setErrors((prev) => ({ ...prev, password: undefined }));
+                    }
+                    if (errors.confirmPassword && confirmPassword) {
+                      setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                    }
+                  }}
                   placeholder="••••••••"
                   secureTextEntry
                   textContentType="newPassword"
                 />
+                {errors.password && <Text style={styles.error}>{errors.password}</Text>}
               </View>
 
               <View style={styles.field}>
                 <Label>Potwierdź hasło</Label>
                 <Input
                   value={confirmPassword}
-                  onChangeText={setConfirmPassword}
+                  onChangeText={(text) => {
+                    setConfirmPassword(text);
+                    if (errors.confirmPassword) {
+                      setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                    }
+                  }}
                   placeholder="••••••••"
                   secureTextEntry
                   textContentType="newPassword"
                 />
+                {errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}
               </View>
 
-              {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-
-              <Button onPress={handleRegister} disabled={loading || Boolean(errorMessage)} loading={loading}>
+              <Button onPress={handleRegister} disabled={loading} loading={loading}>
                 {loading ? 'Rejestracja...' : 'Zarejestruj się'}
               </Button>
             </View>

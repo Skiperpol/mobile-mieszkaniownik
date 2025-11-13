@@ -12,6 +12,7 @@ interface JoinGroupFormProps {
   groupCode: string;
   canJoin: boolean;
   loading: boolean;
+  error?: string;
   onCodeChange: (value: string) => void;
   onSubmit: () => void;
   onBack: () => void;
@@ -22,6 +23,7 @@ export function JoinGroupForm({
   groupCode,
   canJoin,
   loading,
+  error,
   onCodeChange,
   onSubmit,
   onBack,
@@ -48,6 +50,7 @@ export function JoinGroupForm({
               textAlign="center"
               style={styles.codeInput}
             />
+            {error && <Text style={styles.error}>{error}</Text>}
           </View>
 
           <Button

@@ -12,6 +12,7 @@ interface CreateGroupFormProps {
   groupName: string;
   canCreate: boolean;
   loading: boolean;
+  error?: string;
   onGroupNameChange: (value: string) => void;
   onSubmit: () => void;
   onBack: () => void;
@@ -21,6 +22,7 @@ export function CreateGroupForm({
   groupName,
   canCreate,
   loading,
+  error,
   onGroupNameChange,
   onSubmit,
   onBack,
@@ -46,6 +48,7 @@ export function CreateGroupForm({
               keyboardType="default"
               style={styles.textInput}
             />
+            {error && <Text style={styles.error}>{error}</Text>}
           </View>
 
           <View style={styles.fullWidthColumn}>

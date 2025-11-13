@@ -20,6 +20,7 @@ import { Label } from '@/components/ui/label';
 import { DatePickerField } from '@/components/ui/date-picker';
 import { TimePickerField } from '@/components/ui/time-picker';
 import { styles } from './BathroomStatusScreen.style';
+import { validateDateTime, validateDuration } from '@/utils/validation';
 
 function createDateWithNewDatePart(source: Date | null, datePart: Date) {
   const base = source ? new Date(source) : new Date();
@@ -90,8 +91,11 @@ export default function BathroomStatusScreen() {
 
   const isMyReservation = (userId: string) => userId === user?.id;
 
+  const [errors, setErrors] = useState<{ startDateTime?: string; duration?: string }>({});
+
   const handleReserve = () => {
-    if (!currentGroup || !user || !startDateTime) {
+    
+    if (!currentGroup || !user) {
       return;
     }
     const normalizedDuration = Math.max(5, parseInt(duration, 10) || 0);
@@ -239,10 +243,19 @@ export default function BathroomStatusScreen() {
                   <Label>Czas trwania (minuty)</Label>
                   <Input
                     value={duration}
-                    onChangeText={(text) => setDuration(text.replace(/[^0-9]/g, ''))}
+                    onChangeText={(text) => {
+                      setDuration(text.replace(/[^0-9]/g, ''));
+                      if (errors.duration) {
+                        setErrors((prev) => ({ ...prev, duration: undefined }));
+                      }
+                    }}
                     keyboardType="number-pad"
                     placeholder="30"
                   />
+                  {errors.duration && <Text style={styles.error}>{errors.duration}</Text>}
+                  {(errors.startDateTime || errors.duration) && !startDateTime && (
+                    <Text style={styles.error}>{errors.startDateTime}</Text>
+                  )}
                 </View>
 
                 <View style={styles.formActions}>

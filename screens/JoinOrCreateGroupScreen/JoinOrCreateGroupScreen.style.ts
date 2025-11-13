@@ -126,6 +126,11 @@ export const styles = StyleSheet.create({
     inputWrapper: {
       gap: 8,
     },
+    error: {
+      color: '#dc2626',
+      fontSize: 13,
+      marginTop: 4,
+    },
     textInput: {
       backgroundColor: '#f4f4f5',
       borderRadius: 16,

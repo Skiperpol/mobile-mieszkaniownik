@@ -15,7 +15,6 @@ import type {
 } from '../types/app';
 
 export const useAppStore = create<AppState>((set, get) => ({
-  // Initial state
   user: null,
   isAuthenticated: false,
   currentGroup: null,
@@ -27,9 +26,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   bathroomReservations: [],
   dishwasherStatus: null,
   
-  // Auth actions
   login: async (email: string, password: string) => {
-    // Mock login - replace with real Firebase/Supabase auth
     const userId = 'user-1';
     const mockUser: User = {
       id: userId,
@@ -38,7 +35,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       avatar: '👩',
     };
     
-    // Mock group with sample data
     const groupId = 'group-1';
     const otherUsers = ['user-2', 'user-3'];
     const mockGroup: Group = {
@@ -50,7 +46,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       createdAt: new Date('2024-01-01'),
     };
     
-    // Use createMockData to generate all mock data
     const mockData = createMockData(groupId, userId, otherUsers);
     
     set({ 
@@ -68,7 +63,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   
   register: async (email: string, password: string, name: string) => {
-    // Mock registration
     const mockUser: User = {
       id: Math.random().toString(36).substr(2, 9),
       email,
@@ -97,7 +91,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     const userId = get().user?.id || '';
     const code = Math.random().toString(36).substr(2, 6).toUpperCase();
     const groupId = Math.random().toString(36).substr(2, 9);
-    // Domyślnie dodaj innych użytkowników do grupy (dla mock data)
     const otherUsers = ['user-2', 'user-3'];
     const allMembers = [userId, ...otherUsers];
     const group: Group = {
@@ -109,7 +102,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       createdAt: new Date(),
     };
     
-    // Add mock data for the new group with other users
     const mockData = createMockData(groupId, userId, otherUsers);
     
     set({ 
@@ -127,7 +119,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   
   joinGroup: async (code: string) => {
     const userId = get().user?.id || '';
-    // Mock join - replace with real backend call
     const groupId = Math.random().toString(36).substr(2, 9);
     const otherUsers = ['user-2', 'user-3'];
     const group: Group = {
@@ -139,7 +130,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       createdAt: new Date(),
     };
     
-    // Add mock data for the joined group
     const mockData = createMockData(groupId, userId, otherUsers);
     
     set({ 
@@ -158,7 +148,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ currentGroup: null });
   },
   
-  // Expense actions
   addExpense: (expense) => {
     const newExpense: Expense = {
       ...expense,
@@ -182,7 +171,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ expenses: [...get().expenses, settlement] });
   },
   
-  // Shopping actions
   addShoppingItem: (item) => {
     const newItem: ShoppingItem = {
       ...item,
@@ -204,7 +192,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   markAsPurchased: (itemId) => {
     const item = get().shoppingList.find(i => i.id === itemId);
     if (item && item.estimatedPrice && item.claimedBy) {
-      // Create expense automatically
       get().addExpense({
         groupId: item.groupId,
         title: `Zakup: ${item.name}`,
@@ -229,7 +216,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   
-  // Task actions
   addTask: (task) => {
     const newTask: Task = {
       ...task,
@@ -241,12 +227,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   completeTask: (taskId) => {
     const task = get().tasks.find(t => t.id === taskId);
     if (task) {
-      // Rotate assignment
       const currentIndex = task.rotationOrder.indexOf(task.assignedTo);
       const nextIndex = (currentIndex + 1) % task.rotationOrder.length;
       const nextAssignee = task.rotationOrder[nextIndex];
       
-      // Calculate next due date
       const nextDueDate = new Date(task.dueDate);
       if (task.frequency === 'daily') nextDueDate.setDate(nextDueDate.getDate() + 1);
       if (task.frequency === 'weekly') nextDueDate.setDate(nextDueDate.getDate() + 7);
@@ -268,7 +252,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   
-  // Board actions
   addBoardPost: (post) => {
     const newPost: BoardPost = {
       ...post,
@@ -300,7 +283,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   
-  // Calendar actions
   addCalendarEvent: (event) => {
     const newEvent: CalendarEvent = {
       ...event,
@@ -315,7 +297,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   
-  // Bathroom actions
   reserveBathroom: (reservation) => {
     const newReservation: BathroomReservation = {
       ...reservation,
@@ -338,7 +319,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   
-  // Dishwasher actions
   updateDishwasherStatus: (status, userId) => {
     const current = get().dishwasherStatus;
     const newStatus: DishwasherStatus = {

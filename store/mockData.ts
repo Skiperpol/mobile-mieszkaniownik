@@ -507,24 +507,24 @@ export function createMockData(
         id: 'bath-1',
         groupId,
         userId: otherUsers[0] || userId,
-        startTime: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
-        endTime: new Date(Date.now() + 90 * 60 * 1000), // 1.5 hours from now
+        startTime: new Date(Date.now() + 60 * 60 * 1000),
+        endTime: new Date(Date.now() + 90 * 60 * 1000),
         occupied: false,
       },
       {
         id: 'bath-2',
         groupId,
         userId: userId,
-        startTime: new Date(Date.now() + 3 * 60 * 60 * 1000), // 3 hours from now
-        endTime: new Date(Date.now() + 3.5 * 60 * 60 * 1000), // 3.5 hours from now
+        startTime: new Date(Date.now() + 3 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() + 3.5 * 60 * 60 * 1000),
         occupied: false,
       },
       {
         id: 'bath-3',
         groupId,
         userId: otherUsers[1] || userId,
-        startTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-        endTime: new Date(Date.now() + 24 * 60 * 60 * 1000 + 45 * 60 * 1000), // Tomorrow + 45 min
+        startTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        endTime: new Date(Date.now() + 24 * 60 * 60 * 1000 + 45 * 60 * 1000),
         occupied: false,
       },
     ],

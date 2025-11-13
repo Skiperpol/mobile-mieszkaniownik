@@ -199,7 +199,6 @@ export default function BoardPostsScreen() {
                               onChangeText={(text) =>
                                 setCommentInputs((prev) => ({ ...prev, [post.id]: text }))
                               }
-                              style={styles.commentInput}
                             />
                             <Button
                               variant="secondary"

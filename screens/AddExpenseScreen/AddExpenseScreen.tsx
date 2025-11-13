@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { getUserName } from '@/utils/userNames';
+import { validateTitle, validateAmount, validateMembersSelection } from '@/utils/validation';
 import { styles } from './AddExpenseScreen.style';
 
 const CATEGORY_OPTIONS = [
@@ -137,8 +138,23 @@ export default function AddExpenseScreen() {
     setMemberAmounts(newAmounts);
   };
 
+  const [errors, setErrors] = useState<{ title?: string; amount?: string; members?: string }>({});
+
   const handleSubmit = () => {
-    if (!currentGroup || !user || !title.trim() || amountValue <= 0 || !isAmountValid) {
+    const newErrors: { title?: string; amount?: string; members?: string } = {};
+    
+    newErrors.title = validateTitle(title, 'Tytuł wydatku');
+    newErrors.amount = validateAmount(amountValue);
+    newErrors.members = validateMembersSelection(selectedMembers.size, isAmountValid);
+
+    if (newErrors.title || newErrors.amount || newErrors.members) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    
+    if (!currentGroup || !user) {
       return;
     }
 
@@ -195,10 +211,16 @@ export default function AddExpenseScreen() {
                 <Input
                   placeholder="np. Zakupy spożywcze"
                   value={title}
-                  onChangeText={setTitle}
+                  onChangeText={(text) => {
+                    setTitle(text);
+                    if (errors.title) {
+                      setErrors((prev) => ({ ...prev, title: undefined }));
+                    }
+                  }}
                   autoCapitalize="sentences"
                   returnKeyType="next"
                 />
+                {errors.title && <Text style={styles.error}>{errors.title}</Text>}
               </View>
 
               <View style={styles.field}>
@@ -207,9 +229,15 @@ export default function AddExpenseScreen() {
                   placeholder="0.00"
                   keyboardType="decimal-pad"
                   value={amount}
-                  onChangeText={setAmount}
+                  onChangeText={(text) => {
+                    setAmount(text);
+                    if (errors.amount) {
+                      setErrors((prev) => ({ ...prev, amount: undefined }));
+                    }
+                  }}
                   returnKeyType="done"
                 />
+                {errors.amount && <Text style={styles.error}>{errors.amount}</Text>}
               </View>
 
               <View style={styles.field}>
@@ -276,6 +304,7 @@ export default function AddExpenseScreen() {
                 {currentGroup && currentGroup.members.length === 0 && (
                   <Text style={styles.noMembersText}>Brak członków w grupie</Text>
                 )}
+                {errors.members && <Text style={styles.error}>{errors.members}</Text>}
               </View>
 
               {selectedMembers.size > 0 && (
