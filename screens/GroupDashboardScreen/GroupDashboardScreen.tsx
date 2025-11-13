@@ -34,11 +34,10 @@ export default function GroupDashboardScreen() {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
 
-  // Update current time every minute to check bathroom status
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Every minute
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
@@ -47,7 +46,6 @@ export default function GroupDashboardScreen() {
   const totalExpenses = useMemo(() => expenses.reduce((sum, exp) => sum + exp.amount, 0), [expenses]);
 
   const quickActions: QuickAction[] = useMemo(() => {
-    // Get dishwasher status colors and dot
     const dishwasherStatusValue = dishwasherStatus?.status ?? 'empty';
     let dishwasherBackgroundColor = '#fef3c7';
     let dishwasherIconColor = '#d97706';
@@ -152,28 +150,15 @@ export default function GroupDashboardScreen() {
       },
     ];
   }, [activeShoppingItems, currentGroup?.members.length, router, pendingTasks, totalExpenses, dishwasherStatus?.status, bathroomReservations, currentTime]);
-
-  // Calculate card height based on available space
+  
   const cardHeight = useMemo(() => {
     if (availableHeight === null || availableHeight <= 0) {
-      // Return minimum height until we measure the actual space
-      return 132; // 120px content + 12px padding (6px top + 6px bottom)
+      return 132;
     }
-    
-    // Number of rows (8 cards in 2 columns = 4 rows)
+
     const rows = Math.ceil(quickActions.length / 2);
-    
-    // Calculate height per card wrapper
-    // Each cardWrapper has paddingVertical: 6px, which applies to each card
-    // The padding creates spacing between cards, but we want cards to fill available space
-    // Simply divide available height by number of rows to get height per card wrapper
     const heightPerCardWrapper = availableHeight / rows;
-    
-    // Minimum height for card wrapper (120px min content + 12px padding = 132px total)
     const minHeight = 132;
-    
-    // Return the larger value - this ensures cards fill available space on larger devices
-    // but maintain minimum height on smaller devices for scrolling
     return Math.max(heightPerCardWrapper, minHeight);
   }, [availableHeight, quickActions.length]);
 
@@ -181,41 +166,25 @@ export default function GroupDashboardScreen() {
   const welcomeRef = useRef<View>(null);
   const [welcomeHeight, setWelcomeHeight] = useState(0);
 
-  // Measure welcome section height
   const handleWelcomeLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
     setWelcomeHeight(height);
   };
 
-  // Calculate available height for cards
   useEffect(() => {
     if (welcomeHeight === 0) {
       return;
     }
 
-    // Header height: 56px (container) + safe area top
     const headerHeight = 56 + insets.top;
-    
-    // Available height for scroll view = window height - header height
     const scrollViewHeight = windowHeight - headerHeight;
-    
-    // Content padding: 24px top + 32px bottom = 56px
     const contentPadding = 24 + 32;
-    
-    // Welcome section: actual height + margin bottom (20px)
     const welcomeTotalHeight = welcomeHeight + 20;
-    
-    // Available height for grid = scroll view height - content padding - welcome section
-    // This is the exact space available for the grid container
     const availableForGrid = scrollViewHeight - contentPadding - welcomeTotalHeight;
     
-    // Minimum height for scrolling on small screens (4 rows * 120px = 480px)
-    // Use the larger value - this ensures cards fill the screen on larger devices
-    // but maintain minimum height on smaller devices for scrolling
     if (availableForGrid > 480) {
       setAvailableHeight(availableForGrid);
     } else {
-      // On small screens, use minimum but allow scrolling
       setAvailableHeight(480);
     }
   }, [welcomeHeight, windowHeight, insets.top]);
