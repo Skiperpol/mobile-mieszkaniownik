@@ -94,17 +94,6 @@ export default function BathroomStatusScreen() {
   const [errors, setErrors] = useState<{ startDateTime?: string; duration?: string }>({});
 
   const handleReserve = () => {
-    const newErrors: { startDateTime?: string; duration?: string } = {};
-    
-    newErrors.startDateTime = validateDateTime(startDateTime);
-    newErrors.duration = validateDuration(duration);
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setErrors({});
     
     if (!currentGroup || !user) {
       return;
