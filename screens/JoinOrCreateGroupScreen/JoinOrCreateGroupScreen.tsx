@@ -15,6 +15,7 @@ import { SelectMode } from './components/SelectMode';
 import { CreateGroupForm } from './components/CreateGroupForm';
 import { CreateGroupSuccess } from './components/CreateGroupSuccess';
 import { JoinGroupForm } from './components/JoinGroupForm';
+import { validateGroupName, validateGroupCode } from '@/utils/validation';
 
 type Mode = 'select' | 'create' | 'join';
 
@@ -29,34 +30,48 @@ export default function JoinOrCreateGroupScreen() {
   const createGroup = useAppStore((s) => s.createGroup);
   const joinGroup = useAppStore((state) => state.joinGroup);
 
+  const [errors, setErrors] = useState<{ groupName?: string; groupCode?: string }>({});
+  
   const canCreate = useMemo(() => groupName.trim().length >= 3, [groupName]);
   const canJoin = useMemo(() => groupCode.trim().length === 6, [groupCode]);
 
   const handleCreateGroup = useCallback(async () => {
-    if (!canCreate) return;
+    const groupNameError = validateGroupName(groupName);
+    if (groupNameError) {
+      setErrors({ groupName: groupNameError });
+      return;
+    }
+    setErrors({});
     setLoading(true);
     try {
       const code = await createGroup(groupName.trim());
       setGeneratedCode(code);
     } catch (error) {
       console.error('Failed to create group:', error);
+      setErrors({ groupName: 'Nie udało się utworzyć grupy. Spróbuj ponownie.' });
     } finally {
       setLoading(false);
     }
-  }, [canCreate, createGroup, groupName]);
+  }, [createGroup, groupName]);
 
   const handleJoinGroup = useCallback(async () => {
-    if (!canJoin) return;
+    const groupCodeError = validateGroupCode(groupCode);
+    if (groupCodeError) {
+      setErrors({ groupCode: groupCodeError });
+      return;
+    }
+    setErrors({});
     setLoading(true);
     try {
       await joinGroup(groupCode.trim().toUpperCase());
       router.push('/(group)');
     } catch (error) {
       console.error('Failed to join group:', error);
+      setErrors({ groupCode: 'Nie udało się dołączyć do grupy. Sprawdź kod i spróbuj ponownie.' });
     } finally {
       setLoading(false);
     }
-  }, [canJoin, groupCode, joinGroup, router]);
+  }, [groupCode, joinGroup, router]);
 
   const handleFinishCreate = useCallback(() => {
     router.push('/(group)');
@@ -87,7 +102,13 @@ export default function JoinOrCreateGroupScreen() {
                 groupName={groupName}
                 canCreate={canCreate}
                 loading={loading}
-                onGroupNameChange={setGroupName}
+                error={errors.groupName}
+                onGroupNameChange={(value) => {
+                  setGroupName(value);
+                  if (errors.groupName) {
+                    setErrors((prev) => ({ ...prev, groupName: undefined }));
+                  }
+                }}
                 onSubmit={handleCreateGroup}
                 onBack={() => setMode('select')}
               />
@@ -100,7 +121,13 @@ export default function JoinOrCreateGroupScreen() {
                 groupCode={groupCode}
                 canJoin={canJoin}
                 loading={loading}
-                onCodeChange={(value) => setGroupCode(value.toUpperCase())}
+                error={errors.groupCode}
+                onCodeChange={(value) => {
+                  setGroupCode(value.toUpperCase());
+                  if (errors.groupCode) {
+                    setErrors((prev) => ({ ...prev, groupCode: undefined }));
+                  }
+                }}
                 onSubmit={handleJoinGroup}
                 onBack={() => setMode('select')}
                 onScanPress={handleScanQr}

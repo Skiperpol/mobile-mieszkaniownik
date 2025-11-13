@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { validateRequired, validatePositiveNumber } from '@/utils/validation';
 import { styles } from './AddShoppingItemScreen.style';
 
 export default function AddShoppingItemScreen() {
@@ -26,8 +27,24 @@ export default function AddShoppingItemScreen() {
   const user = useAppStore((state) => state.user);
   const addShoppingItem = useAppStore((state) => state.addShoppingItem);
 
+  const [errors, setErrors] = useState<{ name?: string; estimatedPrice?: string }>({});
+
   const handleSubmit = () => {
-    if (!currentGroup || !user || !name.trim()) {
+    const newErrors: { name?: string; estimatedPrice?: string } = {};
+    
+    newErrors.name = validateRequired(name, 'Nazwa produktu');
+    if (estimatedPrice) {
+      newErrors.estimatedPrice = validatePositiveNumber(estimatedPrice, 'Cena');
+    }
+
+    if (newErrors.name || newErrors.estimatedPrice) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    
+    if (!currentGroup || !user) {
       return;
     }
 
@@ -67,10 +84,16 @@ export default function AddShoppingItemScreen() {
                 <Input
                   placeholder="np. Mleko"
                   value={name}
-                  onChangeText={setName}
+                  onChangeText={(text) => {
+                    setName(text);
+                    if (errors.name) {
+                      setErrors((prev) => ({ ...prev, name: undefined }));
+                    }
+                  }}
                   autoCapitalize="sentences"
                   returnKeyType="next"
                 />
+                {errors.name && <Text style={styles.error}>{errors.name}</Text>}
               </View>
 
               <View style={styles.field}>
@@ -90,8 +113,14 @@ export default function AddShoppingItemScreen() {
                   placeholder="0.00"
                   keyboardType="decimal-pad"
                   value={estimatedPrice}
-                  onChangeText={setEstimatedPrice}
+                  onChangeText={(text) => {
+                    setEstimatedPrice(text);
+                    if (errors.estimatedPrice) {
+                      setErrors((prev) => ({ ...prev, estimatedPrice: undefined }));
+                    }
+                  }}
                 />
+                {errors.estimatedPrice && <Text style={styles.error}>{errors.estimatedPrice}</Text>}
                 <Text style={styles.helperText}>
                   Po zakupie zostanie automatycznie utworzony wydatek w Skarbonce
                 </Text>

@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { styles } from './AddBoardPostScreen.style';
+import { validateTitle, validateRequired } from '@/utils/validation';
 
 export default function AddBoardPostScreen() {
   const router = useRouter();
@@ -62,8 +63,22 @@ export default function AddBoardPostScreen() {
     setImageUri(null);
   };
 
+  const [errors, setErrors] = useState<{ title?: string; content?: string }>({});
+
   const handleSubmit = () => {
-    if (!currentGroup || !user || !title.trim() || !content.trim()) {
+    const newErrors: { title?: string; content?: string } = {};
+    
+    newErrors.title = validateTitle(title);
+    newErrors.content = validateRequired(content, 'Treść');
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    
+    if (!currentGroup || !user) {
       return;
     }
 
@@ -103,10 +118,16 @@ export default function AddBoardPostScreen() {
                 <Input
                   placeholder="np. Impreza w piątek!"
                   value={title}
-                  onChangeText={setTitle}
+                  onChangeText={(text) => {
+                    setTitle(text);
+                    if (errors.title) {
+                      setErrors((prev) => ({ ...prev, title: undefined }));
+                    }
+                  }}
                   autoCapitalize="sentences"
                   returnKeyType="next"
                 />
+                {errors.title && <Text style={styles.error}>{errors.title}</Text>}
               </View>
 
               <View style={styles.field}>
@@ -114,11 +135,17 @@ export default function AddBoardPostScreen() {
                 <Textarea
                   placeholder="Napisz wiadomość dla współlokatorów..."
                   value={content}
-                  onChangeText={setContent}
+                  onChangeText={(text) => {
+                    setContent(text);
+                    if (errors.content) {
+                      setErrors((prev) => ({ ...prev, content: undefined }));
+                    }
+                  }}
                   multiline
                   numberOfLines={8}
                   minHeight={160}
                 />
+                {errors.content && <Text style={styles.error}>{errors.content}</Text>}
               </View>
 
               <View style={styles.field}>

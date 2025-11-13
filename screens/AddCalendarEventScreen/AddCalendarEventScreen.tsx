@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { DatePickerField } from '@/components/ui/date-picker';
+import { validateTitle, validateDateRange } from '@/utils/validation';
 import { styles } from './AddCalendarEventScreen.style';
 
 const TYPES: Array<{ value: 'absence' | 'event'; label: string; description: string }> = [
@@ -36,8 +37,29 @@ export default function AddCalendarEventScreen() {
   const user = useAppStore((state) => state.user);
   const addCalendarEvent = useAppStore((state) => state.addCalendarEvent);
 
+  const [errors, setErrors] = useState<{ title?: string; startDate?: string; endDate?: string }>({});
+
   const handleSubmit = () => {
-    if (!currentGroup || !user || !title.trim() || !startDate || !endDate) {
+    const newErrors: { title?: string; startDate?: string; endDate?: string } = {};
+    
+    newErrors.title = validateTitle(title);
+    const dateRangeError = validateDateRange(startDate, endDate);
+    if (dateRangeError) {
+      if (!startDate) {
+        newErrors.startDate = dateRangeError;
+      } else {
+        newErrors.endDate = dateRangeError;
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    
+    if (!currentGroup || !user) {
       return;
     }
 
@@ -106,10 +128,16 @@ export default function AddCalendarEventScreen() {
                 <Input
                   placeholder={type === 'absence' ? 'np. Wyjazd do rodziny' : 'np. Impreza urodzinowa'}
                   value={title}
-                  onChangeText={setTitle}
+                  onChangeText={(text) => {
+                    setTitle(text);
+                    if (errors.title) {
+                      setErrors((prev) => ({ ...prev, title: undefined }));
+                    }
+                  }}
                   autoCapitalize="sentences"
                   returnKeyType="next"
                 />
+                {errors.title && <Text style={styles.error}>{errors.title}</Text>}
               </View>
 
               <View style={styles.datesRow}>
@@ -117,19 +145,34 @@ export default function AddCalendarEventScreen() {
                   <Label>Data od</Label>
                   <DatePickerField
                     value={startDate}
-                    onChange={setStartDate}
+                    onChange={(date) => {
+                      setStartDate(date);
+                      if (errors.startDate) {
+                        setErrors((prev) => ({ ...prev, startDate: undefined }));
+                      }
+                      if (errors.endDate && endDate && date && endDate < date) {
+                        setErrors((prev) => ({ ...prev, endDate: undefined }));
+                      }
+                    }}
                     placeholder="Wybierz datę"
                     maximumDate={endDate ?? undefined}
                   />
+                  {errors.startDate && <Text style={styles.error}>{errors.startDate}</Text>}
                 </View>
                 <View style={styles.dateField}>
                   <Label>Data do</Label>
                   <DatePickerField
                     value={endDate}
-                    onChange={setEndDate}
+                    onChange={(date) => {
+                      setEndDate(date);
+                      if (errors.endDate) {
+                        setErrors((prev) => ({ ...prev, endDate: undefined }));
+                      }
+                    }}
                     placeholder="Wybierz datę"
                     minimumDate={startDate ?? undefined}
                   />
+                  {errors.endDate && <Text style={styles.error}>{errors.endDate}</Text>}
                 </View>
               </View>
 

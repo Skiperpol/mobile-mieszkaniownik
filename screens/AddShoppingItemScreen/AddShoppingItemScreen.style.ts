@@ -22,6 +22,11 @@ export const styles = StyleSheet.create({
   field: {
     gap: 8,
   },
+  error: {
+    color: '#dc2626',
+    fontSize: 13,
+    marginTop: 4,
+  },
   helperText: {
     fontSize: 12,
     color: '#6b7280',
