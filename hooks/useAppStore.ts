@@ -86,7 +86,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
   
-  // Group actions
   createGroup: async (name: string) => {
     const userId = get().user?.id || '';
     const code = Math.random().toString(36).substr(2, 6).toUpperCase();
