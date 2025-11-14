@@ -22,14 +22,12 @@ export default function SettleDebtScreen() {
   });
 
   expenses.forEach((expense) => {
-    // Jeśli istnieje niestandardowy podział, użyj go
     if (expense.splitAmounts && Object.keys(expense.splitAmounts).length > 0) {
       balances[expense.paidBy] = (balances[expense.paidBy] || 0) + expense.amount;
       Object.entries(expense.splitAmounts).forEach(([memberId, amount]) => {
         balances[memberId] = (balances[memberId] || 0) - amount;
       });
     } else {
-      // Równy podział między wszystkich członków w splitBetween
       const splitAmount = expense.amount / expense.splitBetween.length;
       balances[expense.paidBy] = (balances[expense.paidBy] || 0) + expense.amount;
       expense.splitBetween.forEach((memberId) => {

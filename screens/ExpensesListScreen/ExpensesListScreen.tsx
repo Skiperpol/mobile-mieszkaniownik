@@ -45,14 +45,12 @@ export default function ExpensesListScreen() {
     });
 
     expenses.forEach((expense) => {
-      // Jeśli istnieje niestandardowy podział, użyj go
       if (expense.splitAmounts && Object.keys(expense.splitAmounts).length > 0) {
         map[expense.paidBy] = (map[expense.paidBy] || 0) + expense.amount;
         Object.entries(expense.splitAmounts).forEach(([memberId, amount]) => {
           map[memberId] = (map[memberId] || 0) - amount;
         });
       } else {
-        // Równy podział między wszystkich członków w splitBetween
         const split = expense.amount / expense.splitBetween.length;
         map[expense.paidBy] = (map[expense.paidBy] || 0) + expense.amount;
         expense.splitBetween.forEach((memberId) => {
