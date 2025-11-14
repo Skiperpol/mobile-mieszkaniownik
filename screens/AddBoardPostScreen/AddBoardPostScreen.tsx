@@ -21,7 +21,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { styles } from './AddBoardPostScreen.style';
-import { validateTitle, validateRequired } from '@/utils/validation';
 
 export default function AddBoardPostScreen() {
   const router = useRouter();
@@ -35,14 +34,12 @@ export default function AddBoardPostScreen() {
 
   const pickImage = async () => {
     try {
-      // Request permission
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Brak uprawnień', 'Musisz udzielić uprawnień do galerii, aby dodać zdjęcie.');
         return;
       }
 
-      // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,

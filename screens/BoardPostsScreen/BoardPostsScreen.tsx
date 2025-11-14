@@ -11,10 +11,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-
 import { useAppStore } from '@/hooks/useAppStore';
 import { Header } from '@/components/Header';
-import { BottomNav } from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -219,8 +217,6 @@ export default function BoardPostsScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
-
-      {/* <BottomNav activeTab="board" onTabChange={handleTabChange} /> */}
     </View>
   );
 }

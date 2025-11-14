@@ -49,7 +49,6 @@ export default function AddExpenseScreen() {
     return Number.isFinite(parsed) ? parsed : 0;
   }, [amount]);
 
-  // Oblicz sumę wpisanych kwot
   const totalSplitAmount = useMemo(() => {
     return Object.values(memberAmounts).reduce((sum, amountStr) => {
       const normalized = amountStr.replace(',', '.');
@@ -58,27 +57,22 @@ export default function AddExpenseScreen() {
     }, 0);
   }, [memberAmounts]);
 
-  // Sprawdź, czy suma jest równa całkowitej kwocie
   const isAmountValid = useMemo(() => {
     if (selectedMembers.size === 0) return false;
     if (amountValue <= 0) return false;
-    // Tolerancja 0.01 zł dla błędów zaokrągleń
     return Math.abs(totalSplitAmount - amountValue) < 0.01;
   }, [selectedMembers.size, amountValue, totalSplitAmount]);
 
-  // Domyślne zaznaczenie wszystkich członków przy pierwszym renderze
   useEffect(() => {
     if (currentGroup && selectedMembers.size === 0 && currentGroup.members.length > 0) {
       const allMembers = new Set(currentGroup.members);
       setSelectedMembers(allMembers);
-      // Ustaw domyślne wartości na 0.00
       const initialAmounts: Record<string, string> = {};
       currentGroup.members.forEach((memberId) => {
         initialAmounts[memberId] = '0.00';
       });
       setMemberAmounts(initialAmounts);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentGroup]);
 
 
@@ -87,10 +81,8 @@ export default function AddExpenseScreen() {
     const newSelected = new Set(selectedMembers);
     if (newSelected.has(memberId)) {
       newSelected.delete(memberId);
-      // Usuń kwotę dla tego członka i przelicz równo dla pozostałych
       const newAmounts = { ...memberAmounts };
       delete newAmounts[memberId];
-      // Przelicz równo dla pozostałych członków
       if (newSelected.size > 0 && amountValue > 0) {
         const equalAmount = (amountValue / newSelected.size).toFixed(2);
         newSelected.forEach((id) => {
@@ -101,7 +93,6 @@ export default function AddExpenseScreen() {
       setSelectedMembers(newSelected);
     } else {
       newSelected.add(memberId);
-      // Przelicz równo dla wszystkich wybranych członków
       if (newSelected.size > 0 && amountValue > 0) {
         const equalAmount = (amountValue / newSelected.size).toFixed(2);
         const newAmounts: Record<string, string> = {};
@@ -117,7 +108,6 @@ export default function AddExpenseScreen() {
   };
 
   const handleMemberAmountChange = (memberId: string, value: string) => {
-    // Pozwól tylko na liczby i kropkę/przecinek
     const sanitized = value.replace(/[^0-9,.-]/g, '').replace(',', '.');
     setMemberAmounts({ ...memberAmounts, [memberId]: sanitized });
   };
@@ -129,7 +119,6 @@ export default function AddExpenseScreen() {
     selectedMembers.forEach((memberId) => {
       newAmounts[memberId] = equalAmount;
     });
-    // Usuń kwoty dla odznaczonych członków
     Object.keys(memberAmounts).forEach((memberId) => {
       if (!selectedMembers.has(memberId)) {
         delete newAmounts[memberId];
@@ -158,7 +147,6 @@ export default function AddExpenseScreen() {
       return;
     }
 
-    // Konwertuj kwoty na liczby
     const splitAmounts: Record<string, number> = {};
     Object.entries(memberAmounts).forEach(([memberId, amountStr]) => {
       const normalized = amountStr.replace(',', '.');

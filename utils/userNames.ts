@@ -22,7 +22,6 @@ export const getUserAvatar = (userId: string): string => {
 
 // Helper function to generate gradient colors based on user ID or name
 const generateGradientColors = (identifier: string): readonly [string, string] => {
-  // Hash function to generate consistent colors based on string
   let hash = 0;
   for (let i = 0; i < identifier.length; i++) {
     hash = identifier.charCodeAt(i) + ((hash << 5) - hash);
@@ -44,7 +43,6 @@ const generateGradientColors = (identifier: string): readonly [string, string] =
     ['#84cc16', '#65a30d'], // Lime
   ];
   
-  // Use hash to select a gradient
   const index = Math.abs(hash) % gradients.length;
   return gradients[index];
 };

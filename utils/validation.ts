@@ -1,7 +1,3 @@
-/**
- * Funkcje walidacji formularzy z polskimi komunikatami błędów
- */
-
 export const validateEmail = (email: string): string | undefined => {
   if (!email.trim()) {
     return 'E-mail jest wymagany';

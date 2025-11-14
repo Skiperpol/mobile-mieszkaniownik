@@ -18,7 +18,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { DatePickerField } from '@/components/ui/date-picker';
-import { validateTitle, validateDateRange } from '@/utils/validation';
 import { styles } from './AddCalendarEventScreen.style';
 
 const TYPES: { value: 'absence' | 'event'; label: string; description: string }[] = [

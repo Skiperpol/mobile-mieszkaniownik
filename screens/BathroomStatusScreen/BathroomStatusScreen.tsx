@@ -20,7 +20,6 @@ import { Label } from '@/components/ui/label';
 import { DatePickerField } from '@/components/ui/date-picker';
 import { TimePickerField } from '@/components/ui/time-picker';
 import { styles } from './BathroomStatusScreen.style';
-import { validateDateTime, validateDuration } from '@/utils/validation';
 
 function createDateWithNewDatePart(source: Date | null, datePart: Date) {
   const base = source ? new Date(source) : new Date();
@@ -48,22 +47,19 @@ export default function BathroomStatusScreen() {
   const releaseBathroom = useAppStore((state) => state.releaseBathroom);
   const deleteBathroomReservation = useAppStore((state) => state.deleteBathroomReservation);
 
-  // Update current time every minute
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Every minute
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Check and release expired reservations
   useEffect(() => {
     const now = currentTime;
     bathroomReservations.forEach((reservation) => {
       const endTime = new Date(reservation.endTime);
       if (reservation.occupied && endTime < now) {
-        // Reservation has expired, release it
         releaseBathroom(reservation.id);
       }
     });

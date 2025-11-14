@@ -92,8 +92,6 @@ export function Button({
       return <Text style={[styles.textBase, sizeStyles.text, variantStyles.text, textStyle]}>{children}</Text>;
     }
     
-    // For complex children (like View with Text and Icons), render them as-is
-    // React Native will handle the layout correctly
     return children;
   };
 

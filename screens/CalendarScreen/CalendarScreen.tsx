@@ -2,8 +2,6 @@ import React, { useMemo } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-
-import { BottomNav } from '@/components/BottomNav';
 import { Header } from '@/components/Header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -180,11 +178,6 @@ export default function CalendarScreen() {
           ? renderSection('Przeszłe', pastEvents)
           : null}
       </ScrollView>
-
-      {/* <BottomNav
-        activeTab="calendar"
-        onTabChange={handleTabChange}
-      /> */}
     </View>
   );
 }

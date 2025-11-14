@@ -2,7 +2,6 @@ import React from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-
 import { Header } from '@/components/Header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -189,11 +188,6 @@ export default function ShoppingListScreen() {
           </View>
         ) : null}
       </ScrollView>
-
-      {/* <BottomNav
-        activeTab="shopping"
-        onTabChange={handleTabChange}
-      /> */}
     </View>
   );
 }

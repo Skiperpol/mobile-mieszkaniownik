@@ -73,7 +73,6 @@ export default function GroupDashboardScreen() {
         break;
     }
 
-    // Get bathroom status
     const isBathroomOccupied = bathroomReservations.some((res) => {
       const start = new Date(res.startTime);
       const end = new Date(res.endTime);

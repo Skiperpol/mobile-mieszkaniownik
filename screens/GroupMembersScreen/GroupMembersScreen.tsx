@@ -151,17 +151,6 @@ export default function GroupMembersScreen() {
             );
           })}
         </View>
-
-        {/* <Card style={[styles.card, styles.inviteCard]}>
-          <CardContent style={styles.cardContent}>
-            <Text style={styles.inviteTitle}>Zaproś współlokatorów</Text>
-            <Text style={styles.inviteDescription}>
-              Udostępnij kod grupy{' '}
-              <Text style={styles.inviteCode}>{currentGroup.code}</Text>{' '}
-              swoim współlokatorom, aby mogli dołączyć.
-            </Text>
-          </CardContent>
-        </Card> */}
       </ScrollView>
     </View>
   );
