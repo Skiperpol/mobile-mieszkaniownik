@@ -15,6 +15,7 @@ import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { getUserName } from '@/utils/userNames';
+import { calculateMemberBalances } from '@/utils/expenses';
 import { styles } from './ExpensesListScreen.style';
 
 const CATEGORY_STYLES: Record<
@@ -38,29 +39,10 @@ export default function ExpensesListScreen() {
   const currentGroup = useAppStore((state) => state.currentGroup);
   const user = useAppStore((state) => state.user);
 
-  const balances = useMemo(() => {
-    const map: Record<string, number> = {};
-    currentGroup?.members.forEach((memberId) => {
-      map[memberId] = 0;
-    });
-
-    expenses.forEach((expense) => {
-      if (expense.splitAmounts && Object.keys(expense.splitAmounts).length > 0) {
-        map[expense.paidBy] = (map[expense.paidBy] || 0) + expense.amount;
-        Object.entries(expense.splitAmounts).forEach(([memberId, amount]) => {
-          map[memberId] = (map[memberId] || 0) - amount;
-        });
-      } else {
-        const split = expense.amount / expense.splitBetween.length;
-        map[expense.paidBy] = (map[expense.paidBy] || 0) + expense.amount;
-        expense.splitBetween.forEach((memberId) => {
-          map[memberId] = (map[memberId] || 0) - split;
-        });
-      }
-    });
-
-    return map;
-  }, [currentGroup?.members, expenses]);
+  const balances = useMemo(
+    () => calculateMemberBalances(expenses, currentGroup?.members || []),
+    [currentGroup?.members, expenses],
+  );
 
   const totalExpenses = useMemo(
     () => expenses.reduce((sum, expense) => sum + expense.amount, 0),

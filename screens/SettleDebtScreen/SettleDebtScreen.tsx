@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppStore } from '@/hooks/useAppStore';
 import { styles } from './SettleDebtScreen.style';
+import { calculateMemberBalances } from '@/utils/expenses';
 
 export default function SettleDebtScreen() {
   const router = useRouter();
@@ -16,27 +17,9 @@ export default function SettleDebtScreen() {
   const user = useAppStore((state) => state.user);
   const settleDebt = useAppStore((state) => state.settleDebt);
 
-  const balances: Record<string, number> = {};
-  currentGroup?.members.forEach((memberId) => {
-    balances[memberId] = 0;
-  });
+  const balances = calculateMemberBalances(expenses, currentGroup?.members || []);
 
-  expenses.forEach((expense) => {
-    if (expense.splitAmounts && Object.keys(expense.splitAmounts).length > 0) {
-      balances[expense.paidBy] = (balances[expense.paidBy] || 0) + expense.amount;
-      Object.entries(expense.splitAmounts).forEach(([memberId, amount]) => {
-        balances[memberId] = (balances[memberId] || 0) - amount;
-      });
-    } else {
-      const splitAmount = expense.amount / expense.splitBetween.length;
-      balances[expense.paidBy] = (balances[expense.paidBy] || 0) + expense.amount;
-      expense.splitBetween.forEach((memberId) => {
-        balances[memberId] = (balances[memberId] || 0) - splitAmount;
-      });
-    }
-  });
-
-  const settlements: Array<{ from: string; to: string; amount: number }> = [];
+  const settlements: { from: string; to: string; amount: number }[] = [];
   const debtors = Object.entries(balances)
     .filter(([, balance]) => balance < -0.01)
     .map(([id, balance]) => ({ id, amount: -balance }))
